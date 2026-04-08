@@ -13,6 +13,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        heading: ['var(--font-heading)', 'sans-serif'],
+        body: ['var(--font-body)', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -47,6 +51,25 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        correct: {
+          DEFAULT: "hsl(var(--correct))",
+          border: "hsl(var(--correct-border))",
+        },
+        wrong: {
+          DEFAULT: "hsl(var(--wrong))",
+          border: "hsl(var(--wrong-border))",
+        },
+        "quiz-option": {
+          DEFAULT: "hsl(var(--quiz-option))",
+          hover: "hsl(var(--quiz-option-hover))",
+          border: "hsl(var(--quiz-option-border))",
+          selected: "hsl(var(--quiz-option-selected))",
+          "selected-border": "hsl(var(--quiz-option-selected-border))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -80,10 +103,16 @@ export default {
             height: "0",
           },
         },
+        shake: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "20%, 60%": { transform: "translateX(-4px)" },
+          "40%, 80%": { transform: "translateX(4px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        shake: "shake 0.4s ease-in-out",
       },
     },
   },
