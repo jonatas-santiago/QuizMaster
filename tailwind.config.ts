@@ -13,6 +13,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        heading: ['var(--font-heading)', 'sans-serif'],
+        body: ['var(--font-body)', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -46,6 +50,25 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        correct: {
+          DEFAULT: "hsl(var(--correct))",
+          border: "hsl(var(--correct-border))",
+        },
+        wrong: {
+          DEFAULT: "hsl(var(--wrong))",
+          border: "hsl(var(--wrong-border))",
+        },
+        "quiz-option": {
+          DEFAULT: "hsl(var(--quiz-option))",
+          hover: "hsl(var(--quiz-option-hover))",
+          border: "hsl(var(--quiz-option-border))",
+          selected: "hsl(var(--quiz-option-selected))",
+          "selected-border": "hsl(var(--quiz-option-selected-border))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
