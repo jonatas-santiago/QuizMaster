@@ -51,7 +51,6 @@ const Index = () => {
     return (
       <LandingPage
         onStart={() => setScreen("subjects")}
-        onLogin={() => setScreen("subjects")}
       />
     );
   }
