@@ -1,7 +1,10 @@
 import { useState, useCallback } from "react";
 import { Subject } from "@/data/quizQuestions";
+import { LandingPage } from "@/components/LandingPage";
 import { SubjectSelect } from "@/components/SubjectSelect";
 import { QuizScreen } from "@/components/QuizScreen";
+
+type Screen = "landing" | "subjects" | "quiz";
 
 type Stats = Record<Subject, { correct: number; total: number; streak: number }>;
 
@@ -14,6 +17,7 @@ const initialStats: Stats = {
 };
 
 const Index = () => {
+  const [screen, setScreen] = useState<Screen>("landing");
   const [currentSubject, setCurrentSubject] = useState<Subject | null>(null);
   const [stats, setStats] = useState<Stats>(initialStats);
 
@@ -24,6 +28,11 @@ const Index = () => {
     if (pct >= 0.8 && s.total >= 5) return 3;
     if (pct >= 0.6 && s.total >= 3) return 2;
     return 1;
+  };
+
+  const handleSelectSubject = (subject: Subject) => {
+    setCurrentSubject(subject);
+    setScreen("quiz");
   };
 
   const handleFinish = useCallback((correct: number, total: number) => {
@@ -38,15 +47,32 @@ const Index = () => {
     }));
   }, [currentSubject]);
 
-  if (!currentSubject) {
-    return <SubjectSelect onSelect={setCurrentSubject} stats={stats} />;
+  if (screen === "landing") {
+    return (
+      <LandingPage
+        onStart={() => setScreen("subjects")}
+        onLogin={() => setScreen("subjects")}
+      />
+    );
+  }
+
+  if (screen === "subjects" || !currentSubject) {
+    return (
+      <SubjectSelect
+        onSelect={handleSelectSubject}
+        stats={stats}
+      />
+    );
   }
 
   return (
     <QuizScreen
       subject={currentSubject}
       difficulty={getDifficulty(currentSubject)}
-      onBack={() => setCurrentSubject(null)}
+      onBack={() => {
+        setCurrentSubject(null);
+        setScreen("subjects");
+      }}
       onFinish={handleFinish}
     />
   );
