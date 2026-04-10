@@ -1,9 +1,11 @@
 import { BookOpen, Calculator, Globe, FlaskConical, PenTool, Sparkles, GraduationCap, Star, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+import { useNavigate } from "react-router-dom";
+
 interface LandingPageProps {
   onStart: () => void;
-  onLogin: () => void;
+  onLogin?: () => void;
 }
 
 const subjects = [
@@ -20,7 +22,8 @@ const FloatingEmoji = ({ emoji, className }: { emoji: string; className: string 
   </span>
 );
 
-export const LandingPage = ({ onStart, onLogin }: LandingPageProps) => {
+export const LandingPage = ({ onStart }: LandingPageProps) => {
+  const navigate = useNavigate();
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
       {/* Floating decorative emojis */}
@@ -100,7 +103,7 @@ export const LandingPage = ({ onStart, onLogin }: LandingPageProps) => {
             Começar Quiz
           </Button>
           <Button
-            onClick={onLogin}
+            onClick={() => navigate("/auth")}
             variant="outline"
             className="w-full rounded-2xl py-6 font-heading text-base font-bold transition-all duration-200 hover:bg-muted active:scale-[0.98]"
           >
