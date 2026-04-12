@@ -27,6 +27,8 @@ export const QuizScreen = ({ subject, difficulty, onBack, onFinish }: QuizScreen
   const [lives, setLives] = useState(MAX_LIVES);
   const [finished, setFinished] = useState(false);
   const [streak, setStreak] = useState(0);
+  const [maxStreak, setMaxStreak] = useState(0);
+  const [livesLost, setLivesLost] = useState(0);
 
   useEffect(() => {
     const available = getQuestionsForSubject(subject, difficulty);
