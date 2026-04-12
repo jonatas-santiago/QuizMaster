@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      quiz_completions: {
+        Row: {
+          completed_at: string
+          id: string
+          score: number
+          subject: string
+          total_questions: number
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          score?: number
+          subject: string
+          total_questions?: number
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          score?: number
+          subject?: string
+          total_questions?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_achievements: {
         Row: {
           achievement_key: string
