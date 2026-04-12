@@ -4,9 +4,10 @@ import { cn } from "@/lib/utils";
 interface SubjectSelectProps {
   onSelect: (subject: Subject) => void;
   stats: Record<Subject, { correct: number; total: number; streak: number }>;
+  onShowAchievements?: () => void;
 }
 
-export const SubjectSelect = ({ onSelect, stats }: SubjectSelectProps) => {
+export const SubjectSelect = ({ onSelect, stats, onShowAchievements }: SubjectSelectProps) => {
   const subjects = Object.entries(subjectConfig) as [Subject, typeof subjectConfig[Subject]][];
 
   return (
@@ -69,6 +70,15 @@ export const SubjectSelect = ({ onSelect, stats }: SubjectSelectProps) => {
           );
         })}
       </div>
+
+      {onShowAchievements && (
+        <button
+          onClick={onShowAchievements}
+          className="mt-2 flex items-center gap-2 rounded-2xl border-2 border-primary/30 bg-primary/5 px-6 py-3 font-heading font-bold text-primary transition-all hover:bg-primary/10 hover:shadow-lg"
+        >
+          🏆 Conquistas
+        </button>
+      )}
     </div>
   );
 };
