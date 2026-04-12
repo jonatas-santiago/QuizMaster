@@ -27,7 +27,10 @@ const Auth = () => {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin },
+          options: {
+            emailRedirectTo: window.location.origin,
+            data: { display_name: displayName },
+          },
         });
         if (error) throw error;
         toast({
@@ -95,6 +98,26 @@ const Auth = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4">
+          {mode === "signup" && (
+            <div className="space-y-2">
+              <Label htmlFor="displayName" className="font-heading font-bold">
+                Nome / Apelido
+              </Label>
+              <div className="relative">
+                <Input
+                  id="displayName"
+                  type="text"
+                  placeholder="Seu nick"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  required
+                  maxLength={30}
+                  className="rounded-xl"
+                />
+              </div>
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="email" className="font-heading font-bold">
               Email
