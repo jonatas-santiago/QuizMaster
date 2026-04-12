@@ -49,9 +49,14 @@ export const QuizScreen = ({ subject, difficulty, onBack, onFinish }: QuizScreen
     setRevealed(true);
     if (selectedOption === currentQuestion.correctIndex) {
       setCorrectCount(c => c + 1);
-      setStreak(s => s + 1);
+      setStreak(s => {
+        const next = s + 1;
+        setMaxStreak(m => Math.max(m, next));
+        return next;
+      });
     } else {
       setLives(l => l - 1);
+      setLivesLost(l => l + 1);
       setStreak(0);
     }
   }, [selectedOption, currentQuestion]);
@@ -60,7 +65,7 @@ export const QuizScreen = ({ subject, difficulty, onBack, onFinish }: QuizScreen
     if (lives <= 0 || currentIndex >= quizQuestions.length - 1) {
       const finalCorrect = correctCount;
       setFinished(true);
-      onFinish(finalCorrect, quizQuestions.length);
+      onFinish(finalCorrect, quizQuestions.length, maxStreak, livesLost);
       return;
     }
     setCurrentIndex(i => i + 1);
