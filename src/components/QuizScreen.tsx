@@ -10,7 +10,7 @@ interface QuizScreenProps {
   subject: Subject;
   difficulty: number;
   onBack: () => void;
-  onFinish: (correct: number, total: number) => void;
+  onFinish: (correct: number, total: number, maxStreak: number, livesLost: number) => void;
 }
 
 const QUESTIONS_PER_ROUND = 5;
