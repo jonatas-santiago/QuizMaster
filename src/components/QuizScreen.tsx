@@ -10,7 +10,7 @@ interface QuizScreenProps {
   subject: Subject;
   difficulty: number;
   onBack: () => void;
-  onFinish: (correct: number, total: number) => void;
+  onFinish: (correct: number, total: number, maxStreak: number, livesLost: number) => void;
 }
 
 const QUESTIONS_PER_ROUND = 5;
@@ -27,6 +27,8 @@ export const QuizScreen = ({ subject, difficulty, onBack, onFinish }: QuizScreen
   const [lives, setLives] = useState(MAX_LIVES);
   const [finished, setFinished] = useState(false);
   const [streak, setStreak] = useState(0);
+  const [maxStreak, setMaxStreak] = useState(0);
+  const [livesLost, setLivesLost] = useState(0);
 
   useEffect(() => {
     const available = getQuestionsForSubject(subject, difficulty);
@@ -47,9 +49,14 @@ export const QuizScreen = ({ subject, difficulty, onBack, onFinish }: QuizScreen
     setRevealed(true);
     if (selectedOption === currentQuestion.correctIndex) {
       setCorrectCount(c => c + 1);
-      setStreak(s => s + 1);
+      setStreak(s => {
+        const next = s + 1;
+        setMaxStreak(m => Math.max(m, next));
+        return next;
+      });
     } else {
       setLives(l => l - 1);
+      setLivesLost(l => l + 1);
       setStreak(0);
     }
   }, [selectedOption, currentQuestion]);
@@ -58,7 +65,7 @@ export const QuizScreen = ({ subject, difficulty, onBack, onFinish }: QuizScreen
     if (lives <= 0 || currentIndex >= quizQuestions.length - 1) {
       const finalCorrect = correctCount;
       setFinished(true);
-      onFinish(finalCorrect, quizQuestions.length);
+      onFinish(finalCorrect, quizQuestions.length, maxStreak, livesLost);
       return;
     }
     setCurrentIndex(i => i + 1);
@@ -94,6 +101,8 @@ export const QuizScreen = ({ subject, difficulty, onBack, onFinish }: QuizScreen
             setLives(MAX_LIVES);
             setFinished(false);
             setStreak(0);
+            setMaxStreak(0);
+            setLivesLost(0);
             const available = getQuestionsForSubject(subject, difficulty);
             setQuizQuestions(shuffleArray(available).slice(0, QUESTIONS_PER_ROUND));
           }} className="rounded-xl font-heading font-bold">
