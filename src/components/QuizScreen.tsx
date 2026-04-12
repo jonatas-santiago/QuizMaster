@@ -101,6 +101,8 @@ export const QuizScreen = ({ subject, difficulty, onBack, onFinish }: QuizScreen
             setLives(MAX_LIVES);
             setFinished(false);
             setStreak(0);
+            setMaxStreak(0);
+            setLivesLost(0);
             const available = getQuestionsForSubject(subject, difficulty);
             setQuizQuestions(shuffleArray(available).slice(0, QUESTIONS_PER_ROUND));
           }} className="rounded-xl font-heading font-bold">
