@@ -6,6 +6,7 @@ import { QuizScreen } from "@/components/QuizScreen";
 import { AchievementsPage } from "@/components/AchievementsPage";
 import { useAchievements } from "@/hooks/useAchievements";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 type Screen = "landing" | "subjects" | "quiz" | "achievements";
 
@@ -65,6 +66,14 @@ const Index = () => {
     setTotalQuizzes(quizCount);
 
     if (!user) return;
+
+    // Save quiz completion to DB
+    supabase.from("quiz_completions").insert({
+      user_id: user.id,
+      subject: currentSubject,
+      score: correct,
+      total_questions: total,
+    }).then();
 
     // Check achievements
     unlock("first_quiz");
