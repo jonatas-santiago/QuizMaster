@@ -1,5 +1,6 @@
 import { Subject, subjectConfig } from "@/data/quizQuestions";
 import { cn } from "@/lib/utils";
+import { Leaderboard } from "./Leaderboard";
 
 interface SubjectSelectProps {
   onSelect: (subject: Subject) => void;
@@ -79,6 +80,8 @@ export const SubjectSelect = ({ onSelect, stats, onShowAchievements }: SubjectSe
           🏆 Conquistas
         </button>
       )}
+
+      <Leaderboard />
     </div>
   );
 };
