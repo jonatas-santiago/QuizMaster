@@ -41,6 +41,7 @@ export type Database = {
           id: string
           score: number
           subject: string
+          time_seconds: number | null
           total_questions: number
           user_id: string
         }
@@ -49,6 +50,7 @@ export type Database = {
           id?: string
           score?: number
           subject: string
+          time_seconds?: number | null
           total_questions?: number
           user_id: string
         }
@@ -57,6 +59,7 @@ export type Database = {
           id?: string
           score?: number
           subject?: string
+          time_seconds?: number | null
           total_questions?: number
           user_id?: string
         }
