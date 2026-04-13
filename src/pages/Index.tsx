@@ -50,7 +50,7 @@ const Index = () => {
     setScreen("quiz");
   };
 
-  const handleFinish = useCallback((correct: number, total: number, maxStreak: number, livesLost: number) => {
+  const handleFinish = useCallback((correct: number, total: number, maxStreak: number, livesLost: number, timeSeconds: number) => {
     if (!currentSubject) return;
 
     const newStats = {
@@ -73,6 +73,7 @@ const Index = () => {
       subject: currentSubject,
       score: correct,
       total_questions: total,
+      time_seconds: timeSeconds,
     }).then();
 
     // Check achievements

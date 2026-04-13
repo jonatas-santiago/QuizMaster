@@ -1,20 +1,40 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Question, Subject, subjectConfig, getQuestionsForSubject, shuffleArray } from "@/data/quizQuestions";
 import { QuizOption } from "./QuizOption";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Trophy, Heart, Zap } from "lucide-react";
+import { ArrowLeft, ArrowRight, Trophy, Heart, Zap, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface QuizScreenProps {
   subject: Subject;
   difficulty: number;
   onBack: () => void;
-  onFinish: (correct: number, total: number, maxStreak: number, livesLost: number) => void;
+  onFinish: (correct: number, total: number, maxStreak: number, livesLost: number, timeSeconds: number) => void;
 }
 
 const QUESTIONS_PER_ROUND = 5;
 const MAX_LIVES = 3;
+
+function getPercentageMessage(pct: number): { emoji: string; message: string; color: string } {
+  if (pct === 100) return { emoji: "🏆", message: "Albert Einstein 🧠✨", color: "text-yellow-400" };
+  if (pct >= 90) return { emoji: "🟣", message: "Muito bom 🔥", color: "text-purple-500" };
+  if (pct >= 80) return { emoji: "🟣", message: "Bom 👏", color: "text-purple-400" };
+  if (pct >= 70) return { emoji: "🔵", message: "Normal 👍", color: "text-blue-500" };
+  if (pct >= 60) return { emoji: "🔵", message: "Mais ou menos", color: "text-blue-400" };
+  if (pct >= 50) return { emoji: "🟢", message: "Ruim", color: "text-green-500" };
+  if (pct >= 40) return { emoji: "🟢", message: "Muito ruim", color: "text-green-400" };
+  if (pct >= 30) return { emoji: "🟡", message: "Estude bastante 📚", color: "text-yellow-500" };
+  if (pct >= 20) return { emoji: "🟡", message: "Procure a ajuda de um professor 👨‍🏫", color: "text-yellow-400" };
+  if (pct >= 10) return { emoji: "🟠", message: "Ainda está no primeiro ano?", color: "text-orange-500" };
+  return { emoji: "🔴", message: "Você errou de propósito? 😅", color: "text-red-500" };
+}
+
+function formatTime(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return m > 0 ? `${m}m ${s}s` : `${s}s`;
+}
 
 export const QuizScreen = ({ subject, difficulty, onBack, onFinish }: QuizScreenProps) => {
   const config = subjectConfig[subject];
@@ -29,11 +49,19 @@ export const QuizScreen = ({ subject, difficulty, onBack, onFinish }: QuizScreen
   const [streak, setStreak] = useState(0);
   const [maxStreak, setMaxStreak] = useState(0);
   const [livesLost, setLivesLost] = useState(0);
+  const [elapsed, setElapsed] = useState(0);
+  const startTimeRef = useRef<number>(Date.now());
+  const timerRef = useRef<ReturnType<typeof setInterval>>();
 
   useEffect(() => {
     const available = getQuestionsForSubject(subject, difficulty);
     const shuffled = shuffleArray(available).slice(0, QUESTIONS_PER_ROUND);
     setQuizQuestions(shuffled);
+    startTimeRef.current = Date.now();
+    timerRef.current = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - startTimeRef.current) / 1000));
+    }, 1000);
+    return () => clearInterval(timerRef.current);
   }, [subject, difficulty]);
 
   const currentQuestion = quizQuestions[currentIndex];
@@ -63,32 +91,42 @@ export const QuizScreen = ({ subject, difficulty, onBack, onFinish }: QuizScreen
 
   const handleNext = useCallback(() => {
     if (lives <= 0 || currentIndex >= quizQuestions.length - 1) {
-      const finalCorrect = correctCount;
+      clearInterval(timerRef.current);
+      const finalTime = Math.floor((Date.now() - startTimeRef.current) / 1000);
+      setElapsed(finalTime);
       setFinished(true);
-      onFinish(finalCorrect, quizQuestions.length, maxStreak, livesLost);
+      onFinish(correctCount, quizQuestions.length, maxStreak, livesLost, finalTime);
       return;
     }
     setCurrentIndex(i => i + 1);
     setSelectedOption(null);
     setRevealed(false);
-  }, [lives, currentIndex, quizQuestions.length, correctCount, onFinish]);
+  }, [lives, currentIndex, quizQuestions.length, correctCount, onFinish, maxStreak, livesLost]);
 
   if (quizQuestions.length === 0) return null;
 
   if (finished || lives <= 0) {
-    const isWin = correctCount >= Math.ceil(quizQuestions.length * 0.6);
+    const pct = quizQuestions.length > 0 ? Math.round((correctCount / quizQuestions.length) * 100) : 0;
+    const msg = getPercentageMessage(pct);
+
     return (
       <div className="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center gap-6 px-4 text-center">
-        <div className={cn("text-7xl", isWin ? "animate-bounce" : "")}>
-          {isWin ? "🎉" : "😢"}
+        <div className={cn("text-7xl", pct === 100 ? "animate-bounce" : "")}>
+          {msg.emoji}
         </div>
-        <h2 className="font-heading text-3xl font-black text-foreground">
-          {isWin ? "Parabéns!" : "Quase lá!"}
+        <h2 className={cn("font-heading text-3xl font-black", msg.color)}>
+          {msg.message}
         </h2>
         <p className="font-body text-lg text-muted-foreground">
           Você acertou <span className="font-bold text-primary">{correctCount}</span> de{" "}
           <span className="font-bold">{quizQuestions.length}</span> perguntas de {config.label}
         </p>
+        <div className="flex items-center gap-4 text-muted-foreground">
+          <span className="flex items-center gap-1 text-sm font-semibold">
+            <Clock className="h-4 w-4" /> {formatTime(elapsed)}
+          </span>
+          <span className="text-2xl font-black text-primary">{pct}%</span>
+        </div>
         <div className="flex gap-3">
           <Button onClick={onBack} variant="outline" className="rounded-xl font-heading font-bold">
             <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
@@ -103,6 +141,11 @@ export const QuizScreen = ({ subject, difficulty, onBack, onFinish }: QuizScreen
             setStreak(0);
             setMaxStreak(0);
             setLivesLost(0);
+            setElapsed(0);
+            startTimeRef.current = Date.now();
+            timerRef.current = setInterval(() => {
+              setElapsed(Math.floor((Date.now() - startTimeRef.current) / 1000));
+            }, 1000);
             const available = getQuestionsForSubject(subject, difficulty);
             setQuizQuestions(shuffleArray(available).slice(0, QUESTIONS_PER_ROUND));
           }} className="rounded-xl font-heading font-bold">
@@ -129,6 +172,9 @@ export const QuizScreen = ({ subject, difficulty, onBack, onFinish }: QuizScreen
             />
           ))}
         </div>
+        <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground">
+          <Clock className="h-3.5 w-3.5" /> {formatTime(elapsed)}
+        </span>
       </div>
 
       {/* Streak */}

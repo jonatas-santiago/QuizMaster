@@ -1,0 +1,1 @@
+ALTER TABLE public.quiz_completions ADD COLUMN time_seconds INTEGER DEFAULT 0;
