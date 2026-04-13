@@ -27,7 +27,7 @@ export const SubjectSelect = ({ onSelect, stats, onShowAchievements }: SubjectSe
           const s = stats[key];
           const pct = s.total > 0 ? Math.round((s.correct / s.total) * 100) : 0;
 
-          const isAvailable = key === "matematica";
+          const isAvailable = true;
 
           return (
             <button
