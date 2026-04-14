@@ -200,7 +200,6 @@ export const questions: Question[] = [
   q("portugues",3,"O que é regência verbal?",["Conjugação do verbo","Relação entre verbo e complemento","Tempo verbal","Modo do verbo"],1,"Regência verbal trata da relação entre o verbo e seus complementos."),
   q("portugues",3,"Identifique a oração coordenada: 'Estudei, mas não passei.'",["Estudei","Mas não passei","As duas","Nenhuma"],1,"'Mas não passei' é oração coordenada adversativa."),
   q("portugues",3,"Qual é o tipo de sujeito em 'Venderam a casa'?",["Simples","Composto","Indeterminado","Inexistente"],2,"Sujeito indeterminado: não se sabe quem vendeu."),
-];
 
   // ====== INGLÊS ======
   // Nível 1
