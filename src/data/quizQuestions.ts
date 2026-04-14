@@ -1,4 +1,4 @@
-export type Subject = "matematica" | "historia" | "geografia" | "ciencias" | "portugues";
+export type Subject = "matematica" | "historia" | "geografia" | "ciencias" | "portugues" | "ingles" | "educacao_fisica";
 
 export interface Question {
   id: number;
@@ -16,6 +16,8 @@ export const subjectConfig: Record<Subject, { label: string; emoji: string; colo
   geografia: { label: "Geografia", emoji: "🌍", color: "bg-emerald-500" },
   ciencias: { label: "Ciências", emoji: "🔬", color: "bg-violet-500" },
   portugues: { label: "Português", emoji: "📝", color: "bg-rose-500" },
+  ingles: { label: "Inglês", emoji: "🇺🇸", color: "bg-cyan-500" },
+  educacao_fisica: { label: "Educação Física", emoji: "⚽", color: "bg-orange-500" },
 };
 
 let _id = 0;
