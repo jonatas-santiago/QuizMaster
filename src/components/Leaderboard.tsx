@@ -82,7 +82,7 @@ export const Leaderboard = () => {
     const fetchAll = async () => {
       const { data: completions } = await supabase
         .from("quiz_completions")
-        .select("user_id, subject, time_seconds");
+        .select("user_id, subject, time_seconds, score, total_questions");
 
       if (!completions || completions.length === 0) {
         setLoading(false);
