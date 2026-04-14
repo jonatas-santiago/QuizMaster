@@ -9,6 +9,18 @@ interface LeaderEntry {
   display_name: string;
   total_quizzes: number;
   avg_time: number;
+  avg_percent: number;
+}
+
+function getPercentLabel(pct: number) {
+  if (pct >= 100) return { text: "Albert Einstein 🧠✨", color: "text-yellow-500" };
+  if (pct >= 90) return { text: "Muito bom 🔥", color: "text-purple-500" };
+  if (pct >= 80) return { text: "Bom 👏", color: "text-purple-400" };
+  if (pct >= 70) return { text: "Normal 👍", color: "text-blue-500" };
+  if (pct >= 60) return { text: "Mais ou menos", color: "text-blue-400" };
+  if (pct >= 50) return { text: "Ruim", color: "text-green-500" };
+  if (pct >= 40) return { text: "Muito ruim", color: "text-green-400" };
+  return { text: "Estudando… 📚", color: "text-orange-400" };
 }
 
 function formatTime(seconds: number): string {
