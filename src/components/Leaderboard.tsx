@@ -68,8 +68,7 @@ const LeaderList = ({ leaders, loading }: { leaders: LeaderEntry[]; loading: boo
             </div>
           </div>
         );
-      }
-      ))}
+      })}
     </div>
   );
 };
