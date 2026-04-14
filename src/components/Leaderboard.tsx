@@ -9,6 +9,18 @@ interface LeaderEntry {
   display_name: string;
   total_quizzes: number;
   avg_time: number;
+  avg_percent: number;
+}
+
+function getPercentLabel(pct: number) {
+  if (pct >= 100) return { text: "Albert Einstein 🧠✨", color: "text-yellow-500" };
+  if (pct >= 90) return { text: "Muito bom 🔥", color: "text-purple-500" };
+  if (pct >= 80) return { text: "Bom 👏", color: "text-purple-400" };
+  if (pct >= 70) return { text: "Normal 👍", color: "text-blue-500" };
+  if (pct >= 60) return { text: "Mais ou menos", color: "text-blue-400" };
+  if (pct >= 50) return { text: "Ruim", color: "text-green-500" };
+  if (pct >= 40) return { text: "Muito ruim", color: "text-green-400" };
+  return { text: "Estudando… 📚", color: "text-orange-400" };
 }
 
 function formatTime(seconds: number): string {
@@ -33,22 +45,30 @@ const LeaderList = ({ leaders, loading }: { leaders: LeaderEntry[]; loading: boo
   }
   return (
     <div className="flex flex-col gap-2">
-      {leaders.map((entry, i) => (
-        <div key={entry.user_id} className="flex items-center gap-3 rounded-xl bg-muted/50 px-4 py-3">
-          <span className="text-2xl">{medals[i]}</span>
-          <span className="flex-1 font-heading font-bold text-foreground">{entry.display_name}</span>
-          <div className="flex flex-col items-end gap-0.5">
-            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">
-              {entry.total_quizzes} {entry.total_quizzes === 1 ? "lição" : "lições"}
-            </span>
-            {entry.avg_time > 0 && (
-              <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                <Clock className="h-3 w-3" /> média {formatTime(Math.round(entry.avg_time))}
+      {leaders.map((entry, i) => {
+        const label = getPercentLabel(Math.round(entry.avg_percent));
+        return (
+          <div key={entry.user_id} className="flex items-center gap-3 rounded-xl bg-muted/50 px-4 py-3">
+            <span className="text-2xl">{medals[i]}</span>
+            <div className="flex flex-1 flex-col">
+              <span className="font-heading font-bold text-foreground">{entry.display_name}</span>
+              <span className={`text-xs font-semibold ${label.color}`}>
+                {Math.round(entry.avg_percent)}% – {label.text}
               </span>
-            )}
+            </div>
+            <div className="flex flex-col items-end gap-0.5">
+              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">
+                {entry.total_quizzes} {entry.total_quizzes === 1 ? "lição" : "lições"}
+              </span>
+              {entry.avg_time > 0 && (
+                <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                  <Clock className="h-3 w-3" /> média {formatTime(Math.round(entry.avg_time))}
+                </span>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };
@@ -62,7 +82,7 @@ export const Leaderboard = () => {
     const fetchAll = async () => {
       const { data: completions } = await supabase
         .from("quiz_completions")
-        .select("user_id, subject, time_seconds");
+        .select("user_id, subject, time_seconds, score, total_questions");
 
       if (!completions || completions.length === 0) {
         setLoading(false);
@@ -81,11 +101,13 @@ export const Leaderboard = () => {
 
       // Build per-subject + geral
       const buildTop3 = (entries: typeof completions): LeaderEntry[] => {
-        const agg: Record<string, { count: number; totalTime: number }> = {};
+        const agg: Record<string, { count: number; totalTime: number; totalScore: number; totalQuestions: number }> = {};
         entries.forEach(c => {
-          if (!agg[c.user_id]) agg[c.user_id] = { count: 0, totalTime: 0 };
+          if (!agg[c.user_id]) agg[c.user_id] = { count: 0, totalTime: 0, totalScore: 0, totalQuestions: 0 };
           agg[c.user_id].count++;
           agg[c.user_id].totalTime += (c.time_seconds || 0);
+          agg[c.user_id].totalScore += (c.score || 0);
+          agg[c.user_id].totalQuestions += (c.total_questions || 0);
         });
         return Object.entries(agg)
           .sort((a, b) => b[1].count - a[1].count)
@@ -95,6 +117,7 @@ export const Leaderboard = () => {
             display_name: profileMap[uid] || "Anônimo",
             total_quizzes: v.count,
             avg_time: v.count > 0 ? v.totalTime / v.count : 0,
+            avg_percent: v.totalQuestions > 0 ? (v.totalScore / v.totalQuestions) * 100 : 0,
           }));
       };
 
