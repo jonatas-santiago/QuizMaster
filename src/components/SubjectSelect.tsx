@@ -9,7 +9,7 @@ interface SubjectSelectProps {
   onShowProfile?: () => void;
 }
 
-export const SubjectSelect = ({ onSelect, stats, onShowAchievements }: SubjectSelectProps) => {
+export const SubjectSelect = ({ onSelect, stats, onShowAchievements, onShowProfile }: SubjectSelectProps) => {
   const subjects = Object.entries(subjectConfig) as [Subject, typeof subjectConfig[Subject]][];
 
   return (
@@ -73,14 +73,24 @@ export const SubjectSelect = ({ onSelect, stats, onShowAchievements }: SubjectSe
         })}
       </div>
 
-      {onShowAchievements && (
-        <button
-          onClick={onShowAchievements}
-          className="mt-2 flex items-center gap-2 rounded-2xl border-2 border-primary/30 bg-primary/5 px-6 py-3 font-heading font-bold text-primary transition-all hover:bg-primary/10 hover:shadow-lg"
-        >
-          🏆 Conquistas
-        </button>
-      )}
+      <div className="flex gap-3">
+        {onShowProfile && (
+          <button
+            onClick={onShowProfile}
+            className="flex items-center gap-2 rounded-2xl border-2 border-primary/30 bg-primary/5 px-6 py-3 font-heading font-bold text-primary transition-all hover:bg-primary/10 hover:shadow-lg"
+          >
+            👤 Perfil
+          </button>
+        )}
+        {onShowAchievements && (
+          <button
+            onClick={onShowAchievements}
+            className="flex items-center gap-2 rounded-2xl border-2 border-primary/30 bg-primary/5 px-6 py-3 font-heading font-bold text-primary transition-all hover:bg-primary/10 hover:shadow-lg"
+          >
+            🏆 Conquistas
+          </button>
+        )}
+      </div>
 
       <Leaderboard />
     </div>
