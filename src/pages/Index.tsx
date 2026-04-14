@@ -4,11 +4,12 @@ import { LandingPage } from "@/components/LandingPage";
 import { SubjectSelect } from "@/components/SubjectSelect";
 import { QuizScreen } from "@/components/QuizScreen";
 import { AchievementsPage } from "@/components/AchievementsPage";
+import { ProfilePage } from "@/components/ProfilePage";
 import { useAchievements } from "@/hooks/useAchievements";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
-type Screen = "landing" | "subjects" | "quiz" | "achievements";
+type Screen = "landing" | "subjects" | "quiz" | "achievements" | "profile";
 
 type Stats = Record<Subject, { correct: number; total: number; streak: number }>;
 
@@ -102,6 +103,10 @@ const Index = () => {
     return <LandingPage onStart={() => setScreen("subjects")} />;
   }
 
+  if (screen === "profile") {
+    return <ProfilePage onBack={() => setScreen("subjects")} />;
+  }
+
   if (screen === "achievements") {
     return <AchievementsPage unlockedKeys={unlockedKeys} onBack={() => setScreen("subjects")} />;
   }
@@ -112,6 +117,7 @@ const Index = () => {
         onSelect={handleSelectSubject}
         stats={stats}
         onShowAchievements={user ? () => setScreen("achievements") : undefined}
+        onShowProfile={user ? () => setScreen("profile") : undefined}
       />
     );
   }
