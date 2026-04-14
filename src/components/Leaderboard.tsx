@@ -122,7 +122,7 @@ export const Leaderboard = () => {
       };
 
       const result: Record<string, LeaderEntry[]> = { geral: buildTop3(completions) };
-      const subjects: Subject[] = ["matematica", "historia", "geografia", "ciencias", "portugues"];
+      const subjects: Subject[] = ["matematica", "historia", "geografia", "ciencias", "portugues", "ingles", "educacao_fisica"];
       subjects.forEach(s => {
         result[s] = buildTop3(completions.filter(c => c.subject === s));
       });

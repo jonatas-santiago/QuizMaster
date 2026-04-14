@@ -18,6 +18,8 @@ const initialStats: Stats = {
   geografia: { correct: 0, total: 0, streak: 0 },
   ciencias: { correct: 0, total: 0, streak: 0 },
   portugues: { correct: 0, total: 0, streak: 0 },
+  ingles: { correct: 0, total: 0, streak: 0 },
+  educacao_fisica: { correct: 0, total: 0, streak: 0 },
 };
 
 const subjectAchievementMap: Record<Subject, string> = {
@@ -26,6 +28,8 @@ const subjectAchievementMap: Record<Subject, string> = {
   geografia: "geo_expert",
   ciencias: "science_whiz",
   portugues: "portuguese_pro",
+  ingles: "english_ace",
+  educacao_fisica: "pe_champion",
 };
 
 const Index = () => {

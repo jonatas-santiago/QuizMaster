@@ -1,4 +1,4 @@
-export type Subject = "matematica" | "historia" | "geografia" | "ciencias" | "portugues";
+export type Subject = "matematica" | "historia" | "geografia" | "ciencias" | "portugues" | "ingles" | "educacao_fisica";
 
 export interface Question {
   id: number;
@@ -16,6 +16,8 @@ export const subjectConfig: Record<Subject, { label: string; emoji: string; colo
   geografia: { label: "Geografia", emoji: "🌍", color: "bg-emerald-500" },
   ciencias: { label: "Ciências", emoji: "🔬", color: "bg-violet-500" },
   portugues: { label: "Português", emoji: "📝", color: "bg-rose-500" },
+  ingles: { label: "Inglês", emoji: "🇺🇸", color: "bg-cyan-500" },
+  educacao_fisica: { label: "Educação Física", emoji: "⚽", color: "bg-orange-500" },
 };
 
 let _id = 0;
@@ -198,6 +200,76 @@ export const questions: Question[] = [
   q("portugues",3,"O que é regência verbal?",["Conjugação do verbo","Relação entre verbo e complemento","Tempo verbal","Modo do verbo"],1,"Regência verbal trata da relação entre o verbo e seus complementos."),
   q("portugues",3,"Identifique a oração coordenada: 'Estudei, mas não passei.'",["Estudei","Mas não passei","As duas","Nenhuma"],1,"'Mas não passei' é oração coordenada adversativa."),
   q("portugues",3,"Qual é o tipo de sujeito em 'Venderam a casa'?",["Simples","Composto","Indeterminado","Inexistente"],2,"Sujeito indeterminado: não se sabe quem vendeu."),
+
+  // ====== INGLÊS ======
+  // Nível 1
+  q("ingles",1,"What is the English word for 'casa'?",["Car","House","Dog","Tree"],1,"House = casa."),
+  q("ingles",1,"How do you say 'obrigado' in English?",["Please","Sorry","Thank you","Hello"],2,"Thank you = obrigado."),
+  q("ingles",1,"What color is the sky?",["Green","Blue","Red","Yellow"],1,"The sky is blue."),
+  q("ingles",1,"Choose the correct: 'She ___ a student.'",["am","are","is","be"],2,"She is a student."),
+  q("ingles",1,"What is the plural of 'child'?",["Childs","Childrens","Children","Childes"],2,"O plural de child é children."),
+  q("ingles",1,"What does 'dog' mean in Portuguese?",["Gato","Cachorro","Pássaro","Peixe"],1,"Dog = cachorro."),
+  q("ingles",1,"Complete: 'I ___ happy.'",["is","are","am","be"],2,"I am happy."),
+  q("ingles",1,"What day comes after Monday?",["Wednesday","Sunday","Tuesday","Friday"],2,"Após Monday vem Tuesday."),
+  q("ingles",1,"How do you say 'água' in English?",["Fire","Water","Earth","Air"],1,"Water = água."),
+  q("ingles",1,"What is the opposite of 'big'?",["Tall","Small","Fast","Heavy"],1,"O oposto de big é small."),
+  // Nível 2
+  q("ingles",2,"Choose the correct form: 'They ___ to school every day.'",["goes","go","going","gone"],1,"They go (sujeito plural usa base form)."),
+  q("ingles",2,"What is the past tense of 'eat'?",["Eated","Eaten","Ate","Eating"],2,"O passado de eat é ate."),
+  q("ingles",2,"Which sentence is correct?",["He don't like coffee.","He doesn't likes coffee.","He doesn't like coffee.","He not like coffee."],2,"He doesn't like coffee é a forma correta."),
+  q("ingles",2,"What does 'however' mean?",["Portanto","Entretanto","Porque","Enquanto"],1,"However = entretanto/porém."),
+  q("ingles",2,"Choose: 'If it rains, I ___ stay home.'",["will","would","am","do"],0,"First conditional: If + present, will + base form."),
+  q("ingles",2,"What is the comparative of 'good'?",["Gooder","More good","Better","Best"],2,"O comparativo de good é better."),
+  q("ingles",2,"Which word is an adverb?",["Beautiful","Quick","Quickly","Beauty"],2,"Quickly é advérbio (terminação -ly)."),
+  q("ingles",2,"Complete: 'She has ___ living here since 2010.'",["be","being","been","was"],2,"Present perfect continuous: has been."),
+  q("ingles",2,"What does 'although' mean?",["Porque","Embora","Então","Desde"],1,"Although = embora/apesar de."),
+  q("ingles",2,"Choose the correct: 'This is ___ interesting book.'",["a","an","the","—"],1,"An antes de vogal: an interesting."),
+  // Nível 3
+  q("ingles",3,"Which sentence uses the passive voice?",["She wrote the letter.","The letter was written by her.","She is writing.","She writes letters."],1,"Passive: subject receives the action."),
+  q("ingles",3,"What is the correct form? 'I wish I ___ taller.'",["am","was","were","be"],2,"Subjunctive: I wish I were."),
+  q("ingles",3,"Choose: 'By next year, she ___ her degree.'",["finishes","will finish","will have finished","finished"],2,"Future perfect: will have finished."),
+  q("ingles",3,"What does 'ubiquitous' mean?",["Raro","Presente em todo lugar","Invisível","Antigo"],1,"Ubiquitous = presente em todo lugar."),
+  q("ingles",3,"Identify the gerund: 'Swimming is fun.'",["is","fun","Swimming","—"],2,"Swimming funciona como substantivo (gerund)."),
+  q("ingles",3,"Which is a compound-complex sentence?",["I ran.","I ran and she walked.","Although it rained, I ran and she walked.","She walked."],2,"Tem cláusula dependente + duas independentes."),
+  q("ingles",3,"Choose: 'Neither the teacher ___ the students were ready.'",["or","and","nor","but"],2,"Neither... nor é a correlação correta."),
+  q("ingles",3,"What is the subjunctive in 'I suggest he ___ early'?",["leaves","leave","left","leaving"],1,"Subjunctive: suggest + base form."),
+  q("ingles",3,"Which word is a conjunction?",["Quickly","Beautiful","Although","Happiness"],2,"Although é conjunção subordinativa."),
+  q("ingles",3,"'Had I known, I would have helped.' This is a:",["First conditional","Second conditional","Third conditional (inverted)","Zero conditional"],2,"Inversão do third conditional (Had I known = If I had known)."),
+
+  // ====== EDUCAÇÃO FÍSICA ======
+  // Nível 1
+  q("educacao_fisica",1,"Quantos jogadores tem um time de futebol em campo?",["9","10","11","12"],2,"Um time de futebol tem 11 jogadores."),
+  q("educacao_fisica",1,"Qual esporte usa uma raquete e peteca?",["Tênis","Badminton","Ping-pong","Squash"],1,"Badminton usa raquete e peteca (shuttlecock)."),
+  q("educacao_fisica",1,"Quanto tempo dura uma partida de futebol (tempo normal)?",["60 min","80 min","90 min","120 min"],2,"Uma partida dura 90 minutos (2 tempos de 45)."),
+  q("educacao_fisica",1,"O que significa 'aquecimento' na educação física?",["Descansar","Preparar o corpo para exercícios","Competir","Alongar após o treino"],1,"Aquecimento prepara o corpo antes da atividade."),
+  q("educacao_fisica",1,"Qual é o esporte mais popular do Brasil?",["Vôlei","Basquete","Futebol","Natação"],2,"O futebol é o esporte mais popular do Brasil."),
+  q("educacao_fisica",1,"Quantos sets são necessários para vencer no vôlei?",["2","3","4","5"],1,"Vence quem ganhar 3 sets (melhor de 5)."),
+  q("educacao_fisica",1,"O que é frequência cardíaca?",["Força muscular","Batimentos do coração por minuto","Flexibilidade","Velocidade"],1,"É o número de vezes que o coração bate por minuto."),
+  q("educacao_fisica",1,"Qual desses é um exercício aeróbico?",["Levantamento de peso","Corrida","Flexão","Agachamento com barra"],1,"Corrida é exercício aeróbico (usa oxigênio continuamente)."),
+  q("educacao_fisica",1,"Em qual esporte se usa uma cesta?",["Futebol","Handebol","Basquete","Vôlei"],2,"No basquete a bola deve entrar na cesta."),
+  q("educacao_fisica",1,"O alongamento serve para:",["Ganhar massa muscular","Aumentar a flexibilidade","Correr mais rápido","Perder peso"],1,"Alongamento aumenta a flexibilidade."),
+  // Nível 2
+  q("educacao_fisica",2,"Qual a altura oficial da rede de vôlei masculino?",["2,33 m","2,43 m","2,24 m","2,50 m"],1,"A rede masculina tem 2,43 m de altura."),
+  q("educacao_fisica",2,"O que é VO2 máximo?",["Velocidade máxima","Consumo máximo de oxigênio","Força máxima","Volume de treino"],1,"VO2 máx mede a capacidade aeróbica máxima."),
+  q("educacao_fisica",2,"Quantos jogadores tem um time de basquete em quadra?",["4","5","6","7"],1,"Cada time tem 5 jogadores em quadra."),
+  q("educacao_fisica",2,"O que é IMC?",["Índice de Massa Corporal","Índice de Movimento Cardíaco","Índice Muscular Completo","Intensidade Máxima Corporal"],0,"IMC = Índice de Massa Corporal (peso/altura²)."),
+  q("educacao_fisica",2,"Qual sistema energético é usado em sprints curtos?",["Aeróbico","Anaeróbico alático (ATP-CP)","Anaeróbico lático","Oxidativo"],1,"Sprints curtos usam o sistema ATP-CP (anaeróbico alático)."),
+  q("educacao_fisica",2,"O que é periodização no treinamento?",["Treinar todos os dias igual","Organizar fases de treino","Descansar por meses","Competir sem treinar"],1,"Periodização organiza o treino em fases/ciclos."),
+  q("educacao_fisica",2,"Em que ano o Brasil sediou a Copa do Mundo pela última vez?",["2010","2014","2018","2006"],1,"O Brasil sediou a Copa em 2014."),
+  q("educacao_fisica",2,"Qual músculo é o maior do corpo humano?",["Bíceps","Quadríceps","Glúteo máximo","Deltóide"],2,"O glúteo máximo é o maior músculo do corpo."),
+  q("educacao_fisica",2,"O que é propriocepção?",["Força muscular","Percepção do corpo no espaço","Resistência cardíaca","Velocidade de reação"],1,"Propriocepção é a consciência da posição corporal."),
+  q("educacao_fisica",2,"Qual a duração de cada quarto no basquete (NBA)?",["10 min","12 min","15 min","20 min"],1,"Na NBA cada quarto tem 12 minutos."),
+  // Nível 3
+  q("educacao_fisica",3,"O que é o princípio da sobrecarga progressiva?",["Treinar sempre igual","Aumentar estímulos gradualmente","Reduzir a carga com o tempo","Treinar apenas em competições"],1,"Sobrecarga progressiva: aumentar gradualmente a intensidade."),
+  q("educacao_fisica",3,"Qual a frequência cardíaca máxima teórica (fórmula clássica)?",["200 - idade","220 - idade","180 - idade","250 - idade"],1,"FC máx teórica = 220 - idade."),
+  q("educacao_fisica",3,"O que é lactato sanguíneo?",["Um hormônio","Subproduto do metabolismo anaeróbico","Tipo de vitamina","Proteína muscular"],1,"Lactato é produzido na glicólise anaeróbica."),
+  q("educacao_fisica",3,"Qual tipo de fibra muscular é mais resistente à fadiga?",["Tipo I (lenta)","Tipo IIa","Tipo IIb (rápida)","Tipo III"],0,"Fibras tipo I (contração lenta) são mais resistentes à fadiga."),
+  q("educacao_fisica",3,"O que é o EPOC?",["Exercício pós-competição","Consumo excessivo de oxigênio pós-exercício","Protocolo de aquecimento","Escala de percepção"],1,"EPOC = Excess Post-exercise Oxygen Consumption."),
+  q("educacao_fisica",3,"Qual é a função do líquido sinovial?",["Transportar sangue","Lubrificar as articulações","Nutrir os músculos","Produzir energia"],1,"O líquido sinovial lubrifica e protege as articulações."),
+  q("educacao_fisica",3,"O que é hipertrofia muscular?",["Perda de massa","Aumento do tamanho das fibras musculares","Redução da força","Aumento da flexibilidade"],1,"Hipertrofia é o aumento do volume das fibras musculares."),
+  q("educacao_fisica",3,"Qual a principal fonte de energia em exercícios de longa duração?",["ATP-CP","Glicogênio apenas","Gordura (lipídios)","Proteínas"],2,"Em exercícios prolongados de baixa intensidade, gordura é a principal fonte."),
+  q("educacao_fisica",3,"O que é o teste de Cooper?",["Teste de flexibilidade","Teste de corrida de 12 minutos","Teste de força máxima","Teste de velocidade de 100m"],1,"Teste de Cooper: correr o máximo possível em 12 minutos."),
+  q("educacao_fisica",3,"Qual o papel do ATP no exercício?",["Regular a temperatura","Fornecer energia direta para contração muscular","Transportar oxigênio","Produzir hormônios"],1,"ATP é a moeda energética usada na contração muscular."),
 ];
 
 export function getQuestionsForSubject(subject: Subject, difficulty: number): Question[] {
