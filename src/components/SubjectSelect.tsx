@@ -6,6 +6,7 @@ interface SubjectSelectProps {
   onSelect: (subject: Subject) => void;
   stats: Record<Subject, { correct: number; total: number; streak: number }>;
   onShowAchievements?: () => void;
+  onShowProfile?: () => void;
 }
 
 export const SubjectSelect = ({ onSelect, stats, onShowAchievements }: SubjectSelectProps) => {

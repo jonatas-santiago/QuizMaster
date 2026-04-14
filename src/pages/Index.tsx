@@ -117,6 +117,7 @@ const Index = () => {
         onSelect={handleSelectSubject}
         stats={stats}
         onShowAchievements={user ? () => setScreen("achievements") : undefined}
+        onShowProfile={user ? () => setScreen("profile") : undefined}
       />
     );
   }
