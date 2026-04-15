@@ -189,13 +189,21 @@ export const Match1v1Screen = ({ subject, difficulty, onBack, roomCode: joinCode
   // Sync my progress to DB
   const syncProgress = useCallback(async (score: number, current: number, finished: boolean, time: number) => {
     if (!matchId) return;
-    const field = isPlayer1 ? "player1" : "player2";
-    await supabase.from("matches").update({
-      [`${field}_score`]: score,
-      [`${field}_current`]: current,
-      [`${field}_finished`]: finished,
-      [`${field}_time`]: time,
-    }).eq("id", matchId);
+    if (isPlayer1) {
+      await supabase.from("matches").update({
+        player1_score: score,
+        player1_current: current,
+        player1_finished: finished,
+        player1_time: time,
+      }).eq("id", matchId);
+    } else {
+      await supabase.from("matches").update({
+        player2_score: score,
+        player2_current: current,
+        player2_finished: finished,
+        player2_time: time,
+      }).eq("id", matchId);
+    }
   }, [matchId, isPlayer1]);
 
   const handleSelect = useCallback((index: number) => {
