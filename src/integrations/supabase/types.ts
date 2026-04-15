@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      matches: {
+        Row: {
+          created_at: string
+          difficulty: number
+          hard_mode: boolean
+          id: string
+          player1_current: number
+          player1_finished: boolean
+          player1_id: string
+          player1_score: number
+          player1_time: number
+          player2_current: number
+          player2_finished: boolean
+          player2_id: string | null
+          player2_score: number
+          player2_time: number
+          questions: Json
+          room_code: string
+          status: string
+          subject: string
+        }
+        Insert: {
+          created_at?: string
+          difficulty?: number
+          hard_mode?: boolean
+          id?: string
+          player1_current?: number
+          player1_finished?: boolean
+          player1_id: string
+          player1_score?: number
+          player1_time?: number
+          player2_current?: number
+          player2_finished?: boolean
+          player2_id?: string | null
+          player2_score?: number
+          player2_time?: number
+          questions?: Json
+          room_code: string
+          status?: string
+          subject: string
+        }
+        Update: {
+          created_at?: string
+          difficulty?: number
+          hard_mode?: boolean
+          id?: string
+          player1_current?: number
+          player1_finished?: boolean
+          player1_id?: string
+          player1_score?: number
+          player1_time?: number
+          player2_current?: number
+          player2_finished?: boolean
+          player2_id?: string | null
+          player2_score?: number
+          player2_time?: number
+          questions?: Json
+          room_code?: string
+          status?: string
+          subject?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
