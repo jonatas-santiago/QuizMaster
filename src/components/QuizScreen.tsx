@@ -164,6 +164,11 @@ export const QuizScreen = ({ subject, difficulty, hardMode = false, onBack, onFi
           </span>
           <span className="text-2xl font-black text-primary">{pct}%</span>
         </div>
+        {hardMode && (
+          <div className="rounded-xl bg-destructive/10 px-3 py-1 text-sm font-bold text-destructive">
+            💀 Modo Difícil
+          </div>
+        )}
         <div className="flex gap-3">
           <Button onClick={onBack} variant="outline" className="rounded-xl font-heading font-bold">
             <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
@@ -179,6 +184,7 @@ export const QuizScreen = ({ subject, difficulty, hardMode = false, onBack, onFi
             setMaxStreak(0);
             setLivesLost(0);
             setElapsed(0);
+            setQuestionTimer(HARD_MODE_SECONDS);
             startTimeRef.current = Date.now();
             timerRef.current = setInterval(() => {
               setElapsed(Math.floor((Date.now() - startTimeRef.current) / 1000));
@@ -213,6 +219,27 @@ export const QuizScreen = ({ subject, difficulty, hardMode = false, onBack, onFi
           <Clock className="h-3.5 w-3.5" /> {formatTime(elapsed)}
         </span>
       </div>
+
+      {/* Hard mode timer */}
+      {hardMode && !revealed && (
+        <div className="mt-3">
+          <div className="flex items-center justify-between text-xs font-bold mb-1">
+            <span className={cn("flex items-center gap-1", questionTimer <= 10 ? "text-destructive" : "text-muted-foreground")}>
+              💀 {questionTimer}s
+            </span>
+            <span className="text-muted-foreground">Modo Difícil</span>
+          </div>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className={cn(
+                "h-full rounded-full transition-all duration-1000",
+                questionTimer <= 10 ? "bg-destructive" : questionTimer <= 20 ? "bg-yellow-500" : "bg-primary"
+              )}
+              style={{ width: `${(questionTimer / HARD_MODE_SECONDS) * 100}%` }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Streak */}
       {streak >= 2 && (
