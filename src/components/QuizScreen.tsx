@@ -9,12 +9,14 @@ import { cn } from "@/lib/utils";
 interface QuizScreenProps {
   subject: Subject;
   difficulty: number;
+  hardMode?: boolean;
   onBack: () => void;
   onFinish: (correct: number, total: number, maxStreak: number, livesLost: number, timeSeconds: number) => void;
 }
 
 const QUESTIONS_PER_ROUND = 5;
 const MAX_LIVES = 3;
+const HARD_MODE_SECONDS = 30;
 
 function getPercentageMessage(pct: number): { emoji: string; message: string; color: string } {
   if (pct === 100) return { emoji: "🏆", message: "Albert Einstein 🧠✨", color: "text-yellow-400" };
@@ -36,7 +38,7 @@ function formatTime(seconds: number): string {
   return m > 0 ? `${m}m ${s}s` : `${s}s`;
 }
 
-export const QuizScreen = ({ subject, difficulty, onBack, onFinish }: QuizScreenProps) => {
+export const QuizScreen = ({ subject, difficulty, hardMode = false, onBack, onFinish }: QuizScreenProps) => {
   const config = subjectConfig[subject];
 
   const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
@@ -50,8 +52,10 @@ export const QuizScreen = ({ subject, difficulty, onBack, onFinish }: QuizScreen
   const [maxStreak, setMaxStreak] = useState(0);
   const [livesLost, setLivesLost] = useState(0);
   const [elapsed, setElapsed] = useState(0);
+  const [questionTimer, setQuestionTimer] = useState(HARD_MODE_SECONDS);
   const startTimeRef = useRef<number>(Date.now());
   const timerRef = useRef<ReturnType<typeof setInterval>>();
+  const questionTimerRef = useRef<ReturnType<typeof setInterval>>();
 
   useEffect(() => {
     const available = getQuestionsForSubject(subject, difficulty);
@@ -61,8 +65,41 @@ export const QuizScreen = ({ subject, difficulty, onBack, onFinish }: QuizScreen
     timerRef.current = setInterval(() => {
       setElapsed(Math.floor((Date.now() - startTimeRef.current) / 1000));
     }, 1000);
-    return () => clearInterval(timerRef.current);
+    return () => {
+      clearInterval(timerRef.current);
+      clearInterval(questionTimerRef.current);
+    };
   }, [subject, difficulty]);
+
+  // Hard mode question timer
+  useEffect(() => {
+    if (!hardMode || revealed || finished) {
+      clearInterval(questionTimerRef.current);
+      return;
+    }
+    setQuestionTimer(HARD_MODE_SECONDS);
+    questionTimerRef.current = setInterval(() => {
+      setQuestionTimer(prev => {
+        if (prev <= 1) {
+          clearInterval(questionTimerRef.current);
+          // Time's up - auto wrong answer
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(questionTimerRef.current);
+  }, [hardMode, currentIndex, revealed, finished]);
+
+  // Handle time's up in hard mode
+  useEffect(() => {
+    if (hardMode && questionTimer === 0 && !revealed && !finished) {
+      setRevealed(true);
+      setLives(l => l - 1);
+      setLivesLost(l => l + 1);
+      setStreak(0);
+    }
+  }, [questionTimer, hardMode, revealed, finished]);
 
   const currentQuestion = quizQuestions[currentIndex];
   const progress = quizQuestions.length > 0 ? ((currentIndex) / quizQuestions.length) * 100 : 0;
