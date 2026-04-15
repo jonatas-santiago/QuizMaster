@@ -1,15 +1,18 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Subject } from "@/data/quizQuestions";
 import { LandingPage } from "@/components/LandingPage";
 import { SubjectSelect } from "@/components/SubjectSelect";
+import { ModeSelect, GameMode } from "@/components/ModeSelect";
 import { QuizScreen } from "@/components/QuizScreen";
+import { Match1v1Screen } from "@/components/Match1v1Screen";
 import { AchievementsPage } from "@/components/AchievementsPage";
 import { ProfilePage } from "@/components/ProfilePage";
 import { useAchievements } from "@/hooks/useAchievements";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useSearchParams } from "react-router-dom";
 
-type Screen = "landing" | "subjects" | "quiz" | "achievements" | "profile";
+type Screen = "landing" | "subjects" | "mode" | "quiz" | "1v1" | "achievements" | "profile";
 
 type Stats = Record<Subject, { correct: number; total: number; streak: number }>;
 
@@ -35,11 +38,24 @@ const subjectAchievementMap: Record<Subject, string> = {
 
 const Index = () => {
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [screen, setScreen] = useState<Screen>("landing");
   const [currentSubject, setCurrentSubject] = useState<Subject | null>(null);
+  const [gameMode, setGameMode] = useState<GameMode>("normal");
+  const [joinCode, setJoinCode] = useState<string | null>(null);
   const [stats, setStats] = useState<Stats>(initialStats);
   const [totalQuizzes, setTotalQuizzes] = useState(0);
   const { unlockedKeys, unlock } = useAchievements();
+
+  // Handle join link
+  useEffect(() => {
+    const code = searchParams.get("join");
+    if (code && user) {
+      setJoinCode(code);
+      setScreen("1v1");
+      setSearchParams({});
+    }
+  }, [searchParams, user, setSearchParams]);
 
   const getDifficulty = (subject: Subject) => {
     const s = stats[subject];
@@ -52,7 +68,16 @@ const Index = () => {
 
   const handleSelectSubject = (subject: Subject) => {
     setCurrentSubject(subject);
-    setScreen("quiz");
+    setScreen("mode");
+  };
+
+  const handleSelectMode = (mode: GameMode) => {
+    setGameMode(mode);
+    if (mode === "1v1") {
+      setScreen("1v1");
+    } else {
+      setScreen("quiz");
+    }
   };
 
   const handleFinish = useCallback((correct: number, total: number, maxStreak: number, livesLost: number, timeSeconds: number) => {
@@ -72,7 +97,6 @@ const Index = () => {
 
     if (!user) return;
 
-    // Save quiz completion to DB
     supabase.from("quiz_completions").insert({
       user_id: user.id,
       subject: currentSubject,
@@ -81,20 +105,16 @@ const Index = () => {
       time_seconds: timeSeconds,
     }).then();
 
-    // Check achievements
     unlock("first_quiz");
-
     if (correct === total) unlock("perfect_round");
     if (livesLost === 0) unlock("no_lives_lost");
     if (maxStreak >= 5) unlock("streak_5");
     if (maxStreak >= 10) unlock("streak_10");
     if (quizCount >= 10) unlock("ten_quizzes");
 
-    // Subject mastery
     const subjectCorrect = newStats[currentSubject].correct;
     if (subjectCorrect >= 10) unlock(subjectAchievementMap[currentSubject]);
 
-    // All subjects played
     const allPlayed = (Object.keys(newStats) as Subject[]).every(s => newStats[s].total > 0);
     if (allPlayed) unlock("all_subjects");
   }, [currentSubject, stats, totalQuizzes, user, unlock]);
@@ -109,6 +129,31 @@ const Index = () => {
 
   if (screen === "achievements") {
     return <AchievementsPage unlockedKeys={unlockedKeys} onBack={() => setScreen("subjects")} />;
+  }
+
+  if (screen === "mode" && currentSubject) {
+    return (
+      <ModeSelect
+        onSelect={handleSelectMode}
+        onBack={() => { setCurrentSubject(null); setScreen("subjects"); }}
+        isLoggedIn={!!user}
+      />
+    );
+  }
+
+  if (screen === "1v1" && (currentSubject || joinCode)) {
+    return (
+      <Match1v1Screen
+        subject={currentSubject || "matematica"}
+        difficulty={currentSubject ? getDifficulty(currentSubject) : 1}
+        onBack={() => {
+          setJoinCode(null);
+          setCurrentSubject(null);
+          setScreen("subjects");
+        }}
+        roomCode={joinCode || undefined}
+      />
+    );
   }
 
   if (screen === "subjects" || !currentSubject) {
@@ -126,6 +171,7 @@ const Index = () => {
     <QuizScreen
       subject={currentSubject}
       difficulty={getDifficulty(currentSubject)}
+      hardMode={gameMode === "hard"}
       onBack={() => {
         setCurrentSubject(null);
         setScreen("subjects");
