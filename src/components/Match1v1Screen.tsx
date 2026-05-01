@@ -243,10 +243,9 @@ export const Match1v1Screen = ({ subject, difficulty, onBack, roomCode: joinCode
     syncProgress(correctCount, nextIndex, false, finalTime);
   }, [currentIndex, questions.length, correctCount, lives, selectedOption, syncProgress, questions]);
 
-  const copyLink = () => {
-    const url = `${window.location.origin}?join=${roomCode}`;
-    navigator.clipboard.writeText(url);
-    toast.success("Link copiado!");
+  const copyCode = () => {
+    navigator.clipboard.writeText(roomCode);
+    toast.success("Código copiado!");
   };
 
   // Waiting screen
@@ -272,14 +271,14 @@ export const Match1v1Screen = ({ subject, difficulty, onBack, roomCode: joinCode
 
         <div className="flex items-center gap-3 rounded-2xl border-2 border-primary/30 bg-primary/5 px-6 py-4">
           <span className="font-heading text-3xl font-black tracking-widest text-primary">{roomCode}</span>
-          <button onClick={copyLink} className="rounded-xl p-2 transition-colors hover:bg-primary/10">
+          <button onClick={copyCode} className="rounded-xl p-2 transition-colors hover:bg-primary/10">
             <Copy className="h-5 w-5 text-primary" />
           </button>
         </div>
 
-        <Button onClick={copyLink} variant="outline" className="rounded-xl font-heading font-bold">
-          <Copy className="mr-2 h-4 w-4" /> Copiar Link
-        </Button>
+        <p className="font-body text-xs text-muted-foreground">
+          Peça para o oponente digitar este código para entrar
+        </p>
 
         <div className="flex items-center gap-2 text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" />
