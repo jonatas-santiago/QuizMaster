@@ -135,6 +135,11 @@ const Index = () => {
     return (
       <ModeSelect
         onSelect={handleSelectMode}
+        onJoinWithCode={(code) => {
+          setJoinCode(code);
+          setGameMode("1v1");
+          setScreen("1v1");
+        }}
         onBack={() => { setCurrentSubject(null); setScreen("subjects"); }}
         isLoggedIn={!!user}
       />
