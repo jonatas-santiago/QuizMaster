@@ -7,12 +7,14 @@ import { QuizScreen } from "@/components/QuizScreen";
 import { Match1v1Screen } from "@/components/Match1v1Screen";
 import { AchievementsPage } from "@/components/AchievementsPage";
 import { ProfilePage } from "@/components/ProfilePage";
+import { AdminPanel } from "@/components/AdminPanel";
 import { useAchievements } from "@/hooks/useAchievements";
 import { useAuth } from "@/contexts/AuthContext";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { useSearchParams } from "react-router-dom";
 
-type Screen = "landing" | "subjects" | "mode" | "quiz" | "1v1" | "achievements" | "profile";
+type Screen = "landing" | "subjects" | "mode" | "quiz" | "1v1" | "achievements" | "profile" | "admin";
 
 type Stats = Record<Subject, { correct: number; total: number; streak: number }>;
 
