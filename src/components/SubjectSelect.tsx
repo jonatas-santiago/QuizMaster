@@ -7,9 +7,10 @@ interface SubjectSelectProps {
   stats: Record<Subject, { correct: number; total: number; streak: number }>;
   onShowAchievements?: () => void;
   onShowProfile?: () => void;
+  onShowAdmin?: () => void;
 }
 
-export const SubjectSelect = ({ onSelect, stats, onShowAchievements, onShowProfile }: SubjectSelectProps) => {
+export const SubjectSelect = ({ onSelect, stats, onShowAchievements, onShowProfile, onShowAdmin }: SubjectSelectProps) => {
   const subjects = Object.entries(subjectConfig) as [Subject, typeof subjectConfig[Subject]][];
 
   return (
@@ -88,6 +89,14 @@ export const SubjectSelect = ({ onSelect, stats, onShowAchievements, onShowProfi
             className="flex items-center gap-2 rounded-2xl border-2 border-primary/30 bg-primary/5 px-6 py-3 font-heading font-bold text-primary transition-all hover:bg-primary/10 hover:shadow-lg"
           >
             🏆 Conquistas
+          </button>
+        )}
+        {onShowAdmin && (
+          <button
+            onClick={onShowAdmin}
+            className="flex items-center gap-2 rounded-2xl border-2 border-destructive/40 bg-destructive/5 px-6 py-3 font-heading font-bold text-destructive transition-all hover:bg-destructive/10 hover:shadow-lg"
+          >
+            🛡️ Admin
           </button>
         )}
       </div>
