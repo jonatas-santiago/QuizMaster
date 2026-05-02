@@ -137,9 +137,15 @@ export const Match1v1Screen = ({ subject, difficulty, onBack, roomCode: joinCode
     return () => clearInterval(timerRef.current);
   }, [user, joinCode, subject, difficulty, onBack]);
 
-  // Subscribe to match changes
+  // Subscribe to match changes — only depends on matchId so it doesn't re-subscribe
+  const isPlayer1Ref = useRef(isPlayer1);
+  const statusRef = useRef(status);
+  useEffect(() => { isPlayer1Ref.current = isPlayer1; }, [isPlayer1]);
+  useEffect(() => { statusRef.current = status; }, [status]);
+
   useEffect(() => {
     if (!matchId) return;
+    console.log("[1v1] Subscribing to match", matchId);
 
     const channel = supabase
       .channel(`match-${matchId}`)
@@ -150,10 +156,11 @@ export const Match1v1Screen = ({ subject, difficulty, onBack, roomCode: joinCode
         filter: `id=eq.${matchId}`,
       }, async (payload) => {
         const match = payload.new as any;
+        console.log("[1v1] Realtime UPDATE received", match);
 
-        if (match.status === "playing" && status === "waiting") {
+        if (match.status === "playing" && statusRef.current === "waiting") {
           // Opponent joined!
-          const opponentId = isPlayer1 ? match.player2_id : match.player1_id;
+          const opponentId = isPlayer1Ref.current ? match.player2_id : match.player1_id;
           const { data: profile } = await supabase
             .from("profiles")
             .select("display_name")
@@ -169,7 +176,7 @@ export const Match1v1Screen = ({ subject, difficulty, onBack, roomCode: joinCode
         }
 
         // Update opponent progress
-        if (isPlayer1) {
+        if (isPlayer1Ref.current) {
           setOpponentCurrent(match.player2_current);
           setOpponentFinished(match.player2_finished);
           setOpponentScore(match.player2_score);
@@ -181,10 +188,40 @@ export const Match1v1Screen = ({ subject, difficulty, onBack, roomCode: joinCode
           setOpponentTime(match.player1_time);
         }
       })
-      .subscribe();
+      .subscribe((status) => {
+        console.log("[1v1] Channel status:", status);
+      });
 
-    return () => { supabase.removeChannel(channel); };
-  }, [matchId, isPlayer1, status]);
+    // Polling fallback: caso o realtime falhe, verificar a cada 2s se alguém entrou
+    const pollInterval = setInterval(async () => {
+      if (statusRef.current !== "waiting") return;
+      const { data: match } = await supabase
+        .from("matches")
+        .select("*")
+        .eq("id", matchId)
+        .single();
+      if (match && match.status === "playing") {
+        console.log("[1v1] Polling detected opponent joined", match);
+        const opponentId = isPlayer1Ref.current ? match.player2_id : match.player1_id;
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("display_name")
+          .eq("user_id", opponentId)
+          .single();
+        setOpponentName(profile?.display_name || "Oponente");
+        startTimeRef.current = Date.now();
+        timerRef.current = setInterval(() => {
+          setElapsed(Math.floor((Date.now() - startTimeRef.current) / 1000));
+        }, 1000);
+        setStatus("playing");
+      }
+    }, 2000);
+
+    return () => {
+      supabase.removeChannel(channel);
+      clearInterval(pollInterval);
+    };
+  }, [matchId]);
 
   // Sync my progress to DB
   const syncProgress = useCallback(async (score: number, current: number, finished: boolean, time: number) => {
