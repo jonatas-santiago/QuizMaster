@@ -175,6 +175,7 @@ const Index = () => {
         stats={stats}
         onShowAchievements={user ? () => setScreen("achievements") : undefined}
         onShowProfile={user ? () => setScreen("profile") : undefined}
+        onShowAdmin={isAdmin ? () => setScreen("admin") : undefined}
       />
     );
   }
