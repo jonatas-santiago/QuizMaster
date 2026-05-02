@@ -7,9 +7,10 @@ interface SubjectSelectProps {
   stats: Record<Subject, { correct: number; total: number; streak: number }>;
   onShowAchievements?: () => void;
   onShowProfile?: () => void;
+  onShowAdmin?: () => void;
 }
 
-export const SubjectSelect = ({ onSelect, stats, onShowAchievements, onShowProfile }: SubjectSelectProps) => {
+export const SubjectSelect = ({ onSelect, stats, onShowAchievements, onShowProfile, onShowAdmin }: SubjectSelectProps) => {
   const subjects = Object.entries(subjectConfig) as [Subject, typeof subjectConfig[Subject]][];
 
   return (
