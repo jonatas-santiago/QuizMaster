@@ -40,6 +40,7 @@ const subjectAchievementMap: Record<Subject, string> = {
 
 const Index = () => {
   const { user } = useAuth();
+  const isAdmin = useIsAdmin();
   const [searchParams, setSearchParams] = useSearchParams();
   const [screen, setScreen] = useState<Screen>("landing");
   const [currentSubject, setCurrentSubject] = useState<Subject | null>(null);
