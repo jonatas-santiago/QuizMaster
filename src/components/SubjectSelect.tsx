@@ -91,6 +91,14 @@ export const SubjectSelect = ({ onSelect, stats, onShowAchievements, onShowProfi
             🏆 Conquistas
           </button>
         )}
+        {onShowAdmin && (
+          <button
+            onClick={onShowAdmin}
+            className="flex items-center gap-2 rounded-2xl border-2 border-destructive/40 bg-destructive/5 px-6 py-3 font-heading font-bold text-destructive transition-all hover:bg-destructive/10 hover:shadow-lg"
+          >
+            🛡️ Admin
+          </button>
+        )}
       </div>
 
       <Leaderboard />
