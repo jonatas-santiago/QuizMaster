@@ -130,6 +130,10 @@ const Index = () => {
     return <ProfilePage onBack={() => setScreen("subjects")} />;
   }
 
+  if (screen === "admin") {
+    return <AdminPanel onBack={() => setScreen("subjects")} />;
+  }
+
   if (screen === "achievements") {
     return <AchievementsPage unlockedKeys={unlockedKeys} onBack={() => setScreen("subjects")} />;
   }
