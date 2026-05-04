@@ -8,9 +8,10 @@ interface SubjectSelectProps {
   onShowAchievements?: () => void;
   onShowProfile?: () => void;
   onShowAdmin?: () => void;
+  onShowFriends?: () => void;
 }
 
-export const SubjectSelect = ({ onSelect, stats, onShowAchievements, onShowProfile, onShowAdmin }: SubjectSelectProps) => {
+export const SubjectSelect = ({ onSelect, stats, onShowAchievements, onShowProfile, onShowAdmin, onShowFriends }: SubjectSelectProps) => {
   const subjects = Object.entries(subjectConfig) as [Subject, typeof subjectConfig[Subject]][];
 
   return (
