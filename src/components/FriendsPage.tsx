@@ -179,9 +179,8 @@ export const FriendsPage = ({ onBack, onChallenge }: FriendsPageProps) => {
 
     toast.success(`Convite enviado para ${friendName}!`);
     setChallengeOpen(null);
-    onChallenge(friendId, friendName);
-    // Iniciar a sala como host
-    setTimeout(() => onBack(), 500);
+    // Entra como host na sala criada — Index navegará para a tela 1v1
+    onChallenge(code, subject);
   };
 
   if (!user) return null;
