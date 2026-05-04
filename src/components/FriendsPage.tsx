@@ -9,7 +9,7 @@ import { Subject, subjectConfig } from "@/data/quizQuestions";
 
 interface FriendsPageProps {
   onBack: () => void;
-  onChallenge: (friendUserId: string, friendName: string) => void;
+  onChallenge: (roomCode: string, subject: Subject) => void;
 }
 
 interface Profile {
