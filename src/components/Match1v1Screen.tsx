@@ -153,7 +153,7 @@ export const Match1v1Screen = ({ subject, difficulty, onBack, roomCode: joinCode
 
     init();
     return () => clearInterval(timerRef.current);
-  }, [user, joinCode, subject, difficulty, onBack]);
+  }, [user, joinCode, hostRoomCode, subject, difficulty, onBack]);
 
   // Subscribe to match changes — only depends on matchId so it doesn't re-subscribe
   const isPlayer1Ref = useRef(isPlayer1);
