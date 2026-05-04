@@ -17,6 +17,7 @@ interface Match1v1ScreenProps {
   difficulty: number;
   onBack: () => void;
   roomCode?: string; // if joining existing room
+  hostRoomCode?: string; // if hosting an already-created match (from friend challenge)
 }
 
 type MatchStatus = "creating" | "waiting" | "playing" | "finished";
