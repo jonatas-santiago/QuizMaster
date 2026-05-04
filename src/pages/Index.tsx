@@ -48,6 +48,8 @@ const Index = () => {
   const [currentSubject, setCurrentSubject] = useState<Subject | null>(null);
   const [gameMode, setGameMode] = useState<GameMode>("normal");
   const [joinCode, setJoinCode] = useState<string | null>(null);
+  const [hostRoomCode, setHostRoomCode] = useState<string | null>(null);
+  const [challengeSubject, setChallengeSubject] = useState<Subject | null>(null);
   const [stats, setStats] = useState<Stats>(initialStats);
   const [totalQuizzes, setTotalQuizzes] = useState(0);
   const { unlockedKeys, unlock } = useAchievements();
