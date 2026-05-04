@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      friendships: {
+        Row: {
+          addressee_id: string
+          created_at: string
+          id: string
+          requester_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          addressee_id: string
+          created_at?: string
+          id?: string
+          requester_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          addressee_id?: string
+          created_at?: string
+          id?: string
+          requester_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      match_invites: {
+        Row: {
+          created_at: string
+          difficulty: number
+          from_user_id: string
+          id: string
+          room_code: string
+          status: string
+          subject: string
+          to_user_id: string
+        }
+        Insert: {
+          created_at?: string
+          difficulty?: number
+          from_user_id: string
+          id?: string
+          room_code: string
+          status?: string
+          subject: string
+          to_user_id: string
+        }
+        Update: {
+          created_at?: string
+          difficulty?: number
+          from_user_id?: string
+          id?: string
+          room_code?: string
+          status?: string
+          subject?: string
+          to_user_id?: string
+        }
+        Relationships: []
+      }
       matches: {
         Row: {
           created_at: string
