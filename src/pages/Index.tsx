@@ -124,86 +124,100 @@ const Index = () => {
     if (allPlayed) unlock("all_subjects");
   }, [currentSubject, stats, totalQuizzes, user, unlock]);
 
-  if (screen === "landing") {
-    return <LandingPage onStart={() => setScreen("subjects")} />;
-  }
+  const renderScreen = () => {
+    if (screen === "landing") {
+      return <LandingPage onStart={() => setScreen("subjects")} />;
+    }
 
-  if (screen === "profile") {
-    return <ProfilePage onBack={() => setScreen("subjects")} />;
-  }
+    if (screen === "profile") {
+      return <ProfilePage onBack={() => setScreen("subjects")} />;
+    }
 
-  if (screen === "admin") {
-    return <AdminPanel onBack={() => setScreen("subjects")} />;
-  }
+    if (screen === "admin") {
+      return <AdminPanel onBack={() => setScreen("subjects")} />;
+    }
 
-  if (screen === "friends") {
-    return <FriendsPage
-      onBack={() => setScreen("subjects")}
-      onChallenge={(_id, _name) => {
-        // Quando o desafiante envia, ele entra na sala como host
-        setJoinCode(null);
-        setScreen("1v1");
-      }}
-    />;
-  }
-
-  if (screen === "achievements") {
-    return <AchievementsPage unlockedKeys={unlockedKeys} onBack={() => setScreen("subjects")} />;
-  }
-
-  if (screen === "mode" && currentSubject) {
-    return (
-      <ModeSelect
-        onSelect={handleSelectMode}
-        onJoinWithCode={(code) => {
-          setJoinCode(code);
-          setGameMode("1v1");
+    if (screen === "friends") {
+      return <FriendsPage
+        onBack={() => setScreen("subjects")}
+        onChallenge={() => {
+          setJoinCode(null);
           setScreen("1v1");
         }}
-        onBack={() => { setCurrentSubject(null); setScreen("subjects"); }}
-        isLoggedIn={!!user}
-      />
-    );
-  }
+      />;
+    }
 
-  if (screen === "1v1" && (currentSubject || joinCode)) {
+    if (screen === "achievements") {
+      return <AchievementsPage unlockedKeys={unlockedKeys} onBack={() => setScreen("subjects")} />;
+    }
+
+    if (screen === "mode" && currentSubject) {
+      return (
+        <ModeSelect
+          onSelect={handleSelectMode}
+          onJoinWithCode={(code) => {
+            setJoinCode(code);
+            setGameMode("1v1");
+            setScreen("1v1");
+          }}
+          onBack={() => { setCurrentSubject(null); setScreen("subjects"); }}
+          isLoggedIn={!!user}
+        />
+      );
+    }
+
+    if (screen === "1v1" && (currentSubject || joinCode)) {
+      return (
+        <Match1v1Screen
+          subject={currentSubject || "matematica"}
+          difficulty={currentSubject ? getDifficulty(currentSubject) : 1}
+          onBack={() => {
+            setJoinCode(null);
+            setCurrentSubject(null);
+            setScreen("subjects");
+          }}
+          roomCode={joinCode || undefined}
+        />
+      );
+    }
+
+    if (screen === "subjects" || !currentSubject) {
+      return (
+        <SubjectSelect
+          onSelect={handleSelectSubject}
+          stats={stats}
+          onShowAchievements={user ? () => setScreen("achievements") : undefined}
+          onShowProfile={user ? () => setScreen("profile") : undefined}
+          onShowFriends={user ? () => setScreen("friends") : undefined}
+          onShowAdmin={isAdmin ? () => setScreen("admin") : undefined}
+        />
+      );
+    }
+
     return (
-      <Match1v1Screen
-        subject={currentSubject || "matematica"}
-        difficulty={currentSubject ? getDifficulty(currentSubject) : 1}
+      <QuizScreen
+        subject={currentSubject}
+        difficulty={getDifficulty(currentSubject)}
+        hardMode={gameMode === "hard"}
         onBack={() => {
-          setJoinCode(null);
           setCurrentSubject(null);
           setScreen("subjects");
         }}
-        roomCode={joinCode || undefined}
+        onFinish={handleFinish}
       />
     );
-  }
-
-  if (screen === "subjects" || !currentSubject) {
-    return (
-      <SubjectSelect
-        onSelect={handleSelectSubject}
-        stats={stats}
-        onShowAchievements={user ? () => setScreen("achievements") : undefined}
-        onShowProfile={user ? () => setScreen("profile") : undefined}
-        onShowAdmin={isAdmin ? () => setScreen("admin") : undefined}
-      />
-    );
-  }
+  };
 
   return (
-    <QuizScreen
-      subject={currentSubject}
-      difficulty={getDifficulty(currentSubject)}
-      hardMode={gameMode === "hard"}
-      onBack={() => {
-        setCurrentSubject(null);
-        setScreen("subjects");
-      }}
-      onFinish={handleFinish}
-    />
+    <>
+      {renderScreen()}
+      {user && screen !== "1v1" && (
+        <InviteToast onAccept={(invite) => {
+          setJoinCode(invite.room_code);
+          setScreen("1v1");
+        }} />
+      )}
+    </>
   );
 };
 
