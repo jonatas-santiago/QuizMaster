@@ -109,27 +109,44 @@ export const Match1v1Screen = ({ subject, difficulty, onBack, roomCode: joinCode
         setStatus("playing");
       } else {
         // Create new room
-        const code = generateRoomCode();
-        const qs = shuffleArray(getQuestionsForSubject(subject, difficulty)).slice(0, QUESTIONS_PER_ROUND);
-
-        const { data, error } = await supabase.from("matches").insert({
-          room_code: code,
-          player1_id: user.id,
-          subject,
-          difficulty,
-          questions: qs as any,
-          status: "waiting",
-        }).select().single();
-
-        if (error) {
-          toast.error("Erro ao criar sala");
-          onBack();
-          return;
+        let data: any;
+        if (hostRoomCode) {
+          // Match já criada via convite de amigo — apenas carregar
+          const { data: existing, error } = await supabase
+            .from("matches")
+            .select("*")
+            .eq("room_code", hostRoomCode)
+            .eq("player1_id", user.id)
+            .single();
+          if (error || !existing) {
+            toast.error("Sala não encontrada");
+            onBack();
+            return;
+          }
+          data = existing;
+          setQuestions((existing.questions as any[]).map((q: any) => q as Question));
+        } else {
+          const code = generateRoomCode();
+          const qs = shuffleArray(getQuestionsForSubject(subject, difficulty)).slice(0, QUESTIONS_PER_ROUND);
+          const { data: created, error } = await supabase.from("matches").insert({
+            room_code: code,
+            player1_id: user.id,
+            subject,
+            difficulty,
+            questions: qs as any,
+            status: "waiting",
+          }).select().single();
+          if (error) {
+            toast.error("Erro ao criar sala");
+            onBack();
+            return;
+          }
+          data = created;
+          setQuestions(qs);
         }
 
         setMatchId(data.id);
-        setRoomCode(code);
-        setQuestions(qs);
+        setRoomCode(data.room_code);
         setStatus("waiting");
       }
     };
