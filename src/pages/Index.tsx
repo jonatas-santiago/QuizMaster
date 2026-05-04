@@ -136,6 +136,17 @@ const Index = () => {
     return <AdminPanel onBack={() => setScreen("subjects")} />;
   }
 
+  if (screen === "friends") {
+    return <FriendsPage
+      onBack={() => setScreen("subjects")}
+      onChallenge={(_id, _name) => {
+        // Quando o desafiante envia, ele entra na sala como host
+        setJoinCode(null);
+        setScreen("1v1");
+      }}
+    />;
+  }
+
   if (screen === "achievements") {
     return <AchievementsPage unlockedKeys={unlockedKeys} onBack={() => setScreen("subjects")} />;
   }
