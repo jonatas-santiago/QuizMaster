@@ -142,8 +142,10 @@ const Index = () => {
     if (screen === "friends") {
       return <FriendsPage
         onBack={() => setScreen("subjects")}
-        onChallenge={() => {
+        onChallenge={(roomCode, subject) => {
           setJoinCode(null);
+          setHostRoomCode(roomCode);
+          setCurrentSubject(subject);
           setScreen("1v1");
         }}
       />;
@@ -175,10 +177,12 @@ const Index = () => {
           difficulty={currentSubject ? getDifficulty(currentSubject) : 1}
           onBack={() => {
             setJoinCode(null);
+            setHostRoomCode(null);
             setCurrentSubject(null);
             setScreen("subjects");
           }}
           roomCode={joinCode || undefined}
+          hostRoomCode={hostRoomCode || undefined}
         />
       );
     }
