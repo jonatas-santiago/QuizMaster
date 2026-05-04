@@ -32,7 +32,7 @@ function formatTime(seconds: number): string {
   return m > 0 ? `${m}m ${s}s` : `${s}s`;
 }
 
-export const Match1v1Screen = ({ subject, difficulty, onBack, roomCode: joinCode }: Match1v1ScreenProps) => {
+export const Match1v1Screen = ({ subject, difficulty, onBack, roomCode: joinCode, hostRoomCode }: Match1v1ScreenProps) => {
   const { user } = useAuth();
   const config = subjectConfig[subject];
 
