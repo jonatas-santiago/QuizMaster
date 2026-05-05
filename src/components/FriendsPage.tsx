@@ -355,9 +355,20 @@ export const FriendsPage = ({ onBack, onChallenge }: FriendsPageProps) => {
                   </div>
                   <p className="flex-1 font-heading font-bold text-foreground">{p.display_name}</p>
                   {existing ? (
-                    <span className="text-xs font-semibold text-muted-foreground">
-                      {existing.status === "accepted" ? "✅ Amigos" : "⏳ Pendente"}
-                    </span>
+                    existing.status === "pending" && existing.addressee_id === user.id ? (
+                      <div className="flex gap-1">
+                        <Button size="sm" onClick={() => respond(existing.id, "accepted")} className="rounded-xl">
+                          <Check className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => respond(existing.id, "declined")} className="rounded-xl">
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <span className="text-xs font-semibold text-muted-foreground">
+                        {existing.status === "accepted" ? "✅ Amigos" : "⏳ Pendente"}
+                      </span>
+                    )
                   ) : (
                     <Button size="sm" onClick={() => sendRequest(p.user_id)} className="rounded-xl">
                       <UserPlus className="h-4 w-4 mr-1" /> Adicionar
