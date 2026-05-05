@@ -27,6 +27,7 @@ interface Friendship {
 
 interface FriendStats {
   total_quizzes: number;
+  total_points: number;
   avg_score: number;
   achievements: number;
 }
@@ -48,16 +49,26 @@ export const FriendsPage = ({ onBack, onChallenge }: FriendsPageProps) => {
       .from("friendships")
       .select("*")
       .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`);
-    if (!fs) return;
+    if (!fs) {
+      setFriendships([]);
+      setProfiles(new Map());
+      setStats(new Map());
+      return;
+    }
     setFriendships(fs);
 
     const otherIds = [...new Set(fs.map(f => f.requester_id === user.id ? f.addressee_id : f.requester_id))];
-    if (otherIds.length === 0) return;
+    const idsToLoad = [...new Set([...otherIds, user.id])];
+    if (idsToLoad.length === 0) {
+      setProfiles(new Map());
+      setStats(new Map());
+      return;
+    }
 
     const { data: profs } = await supabase
       .from("profiles")
       .select("user_id, display_name, avatar_url")
-      .in("user_id", otherIds);
+      .in("user_id", idsToLoad);
 
     const profMap = new Map<string, Profile>();
     profs?.forEach(p => profMap.set(p.user_id, p));
@@ -67,28 +78,32 @@ export const FriendsPage = ({ onBack, onChallenge }: FriendsPageProps) => {
     const acceptedIds = otherIds.filter(id => 
       fs.some(f => f.status === "accepted" && (f.requester_id === id || f.addressee_id === id))
     );
-    if (acceptedIds.length > 0) {
+    const statsIds = [...new Set([...acceptedIds, user.id])];
+    if (statsIds.length > 0) {
       const { data: comps } = await supabase
         .from("quiz_completions")
-        .select("user_id, score, total_questions")
-        .in("user_id", acceptedIds);
+        .select("user_id, score, total_questions, points")
+        .in("user_id", statsIds);
       const { data: achs } = await supabase
         .from("user_achievements")
         .select("user_id")
-        .in("user_id", acceptedIds);
+        .in("user_id", statsIds);
 
       const statMap = new Map<string, FriendStats>();
-      acceptedIds.forEach(id => {
+      statsIds.forEach(id => {
         const userComps = comps?.filter(c => c.user_id === id) || [];
         const totalQ = userComps.reduce((s, c) => s + (c.total_questions || 0), 0);
         const totalS = userComps.reduce((s, c) => s + (c.score || 0), 0);
         statMap.set(id, {
           total_quizzes: userComps.length,
+          total_points: userComps.reduce((s, c) => s + (c.points || 10), 0),
           avg_score: totalQ > 0 ? Math.round((totalS / totalQ) * 100) : 0,
           achievements: achs?.filter(a => a.user_id === id).length || 0,
         });
       });
       setStats(statMap);
+    } else {
+      setStats(new Map());
     }
   };
 
