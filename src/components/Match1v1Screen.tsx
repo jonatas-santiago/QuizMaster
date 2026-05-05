@@ -52,6 +52,7 @@ export const Match1v1Screen = ({ subject, difficulty, onBack, roomCode: joinCode
   const [elapsed, setElapsed] = useState(0);
   const startTimeRef = useRef<number>(0);
   const timerRef = useRef<ReturnType<typeof setInterval>>();
+  const initStartedRef = useRef(false);
 
   // Opponent progress
   const [opponentCurrent, setOpponentCurrent] = useState(0);
@@ -63,6 +64,8 @@ export const Match1v1Screen = ({ subject, difficulty, onBack, roomCode: joinCode
   // Create or join room
   useEffect(() => {
     if (!user) return;
+    if (initStartedRef.current) return;
+    initStartedRef.current = true;
 
     const init = async () => {
       if (joinCode) {
