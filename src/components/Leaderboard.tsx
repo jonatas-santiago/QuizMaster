@@ -8,6 +8,7 @@ interface LeaderEntry {
   user_id: string;
   display_name: string;
   total_quizzes: number;
+  total_points: number;
   avg_time: number;
   avg_percent: number;
 }
@@ -58,6 +59,9 @@ const LeaderList = ({ leaders, loading }: { leaders: LeaderEntry[]; loading: boo
             </div>
             <div className="flex flex-col items-end gap-0.5">
               <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">
+                {entry.total_points} pts
+              </span>
+              <span className="text-[10px] font-semibold text-muted-foreground">
                 {entry.total_quizzes} {entry.total_quizzes === 1 ? "lição" : "lições"}
               </span>
               {entry.avg_time > 0 && (
@@ -82,7 +86,7 @@ export const Leaderboard = () => {
     const fetchAll = async () => {
       const { data: completions } = await supabase
         .from("quiz_completions")
-        .select("user_id, subject, time_seconds, score, total_questions");
+        .select("user_id, subject, time_seconds, score, total_questions, points");
 
       if (!completions || completions.length === 0) {
         setLoading(false);
@@ -101,21 +105,23 @@ export const Leaderboard = () => {
 
       // Build per-subject + geral
       const buildTop3 = (entries: typeof completions): LeaderEntry[] => {
-        const agg: Record<string, { count: number; totalTime: number; totalScore: number; totalQuestions: number }> = {};
+        const agg: Record<string, { count: number; totalPoints: number; totalTime: number; totalScore: number; totalQuestions: number }> = {};
         entries.forEach(c => {
-          if (!agg[c.user_id]) agg[c.user_id] = { count: 0, totalTime: 0, totalScore: 0, totalQuestions: 0 };
+          if (!agg[c.user_id]) agg[c.user_id] = { count: 0, totalPoints: 0, totalTime: 0, totalScore: 0, totalQuestions: 0 };
           agg[c.user_id].count++;
+          agg[c.user_id].totalPoints += (c.points || 10);
           agg[c.user_id].totalTime += (c.time_seconds || 0);
           agg[c.user_id].totalScore += (c.score || 0);
           agg[c.user_id].totalQuestions += (c.total_questions || 0);
         });
         return Object.entries(agg)
-          .sort((a, b) => b[1].count - a[1].count)
+          .sort((a, b) => b[1].totalPoints - a[1].totalPoints || b[1].count - a[1].count)
           .slice(0, 3)
           .map(([uid, v]) => ({
             user_id: uid,
             display_name: profileMap[uid] || "Anônimo",
             total_quizzes: v.count,
+            total_points: v.totalPoints,
             avg_time: v.count > 0 ? v.totalTime / v.count : 0,
             avg_percent: v.totalQuestions > 0 ? (v.totalScore / v.totalQuestions) * 100 : 0,
           }));
