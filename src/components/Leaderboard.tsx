@@ -148,7 +148,7 @@ export const Leaderboard = () => {
   return (
     <div className="w-full rounded-2xl border-2 border-primary/20 bg-card p-4">
       <h2 className="mb-3 flex items-center gap-2 font-heading text-lg font-bold text-foreground">
-        <Trophy className="h-5 w-5 text-primary" /> Ranking Top 3
+        <Trophy className="h-5 w-5 text-primary" /> Ranking por Pontos
       </h2>
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="mb-3 flex w-full flex-wrap gap-1 h-auto bg-transparent p-0">
