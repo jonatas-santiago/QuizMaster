@@ -153,7 +153,11 @@ export const FriendsPage = ({ onBack, onChallenge }: FriendsPageProps) => {
   };
 
   const respond = async (id: string, status: "accepted" | "declined") => {
-    await supabase.from("friendships").update({ status }).eq("id", id);
+    const { error } = await supabase.from("friendships").update({ status }).eq("id", id);
+    if (error) {
+      toast.error("Erro ao responder pedido");
+      return;
+    }
     toast.success(status === "accepted" ? "Amigo adicionado! 🎉" : "Pedido recusado");
     loadData();
   };
@@ -260,7 +264,7 @@ export const FriendsPage = ({ onBack, onChallenge }: FriendsPageProps) => {
                     <p className="font-heading font-bold text-foreground">{prof?.display_name || "Amigo"}</p>
                     {st && (
                       <p className="text-xs text-muted-foreground">
-                        {st.total_quizzes} quizzes • {st.avg_score}% acerto • {st.achievements} 🏆
+                        {st.total_points} pts • {st.total_quizzes} quizzes • {st.avg_score}% acerto • {st.achievements} 🏆
                       </p>
                     )}
                   </div>
@@ -369,26 +373,26 @@ export const FriendsPage = ({ onBack, onChallenge }: FriendsPageProps) => {
           rankingList.length === 0 ? (
             <p className="py-12 text-center font-body text-muted-foreground">Adicione amigos para ver o ranking!</p>
           ) : (
-            rankingList
+            [
+              { id: user.id, name: profiles.get(user.id)?.display_name || "Você", stats: stats.get(user.id), isMe: true },
+              ...rankingList.map(r => ({ ...r, isMe: false })),
+            ]
               .filter(r => r.stats)
-              .sort((a, b) => (b.stats?.avg_score || 0) - (a.stats?.avg_score || 0))
+              .sort((a, b) => (b.stats?.total_points || 0) - (a.stats?.total_points || 0) || (b.stats?.avg_score || 0) - (a.stats?.avg_score || 0))
               .map((r, i) => (
                 <div key={r.id} className={`flex items-center gap-3 rounded-2xl border-2 p-4 ${
-                  i === 0 ? "border-yellow-400 bg-yellow-50 dark:bg-yellow-950/20" :
-                  i === 1 ? "border-gray-400 bg-gray-50 dark:bg-gray-900/20" :
-                  i === 2 ? "border-amber-600 bg-amber-50 dark:bg-amber-950/20" :
-                  "border-quiz-option-border bg-card"
+                  i < 3 ? "border-primary/30 bg-primary/5" : "border-quiz-option-border bg-card"
                 }`}>
                   <span className="font-heading text-2xl font-black w-8">
                     {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`}
                   </span>
                   <div className="flex-1">
-                    <p className="font-heading font-bold text-foreground">{r.name}</p>
+                    <p className="font-heading font-bold text-foreground">{r.name}{r.isMe ? " (você)" : ""}</p>
                     <p className="text-xs text-muted-foreground">
-                      {r.stats?.total_quizzes} quizzes • {r.stats?.achievements} 🏆
+                      {r.stats?.total_quizzes} quizzes • {r.stats?.avg_score}% acerto • {r.stats?.achievements} 🏆
                     </p>
                   </div>
-                  <span className="font-heading text-xl font-black text-primary">{r.stats?.avg_score}%</span>
+                  <span className="font-heading text-xl font-black text-primary">{r.stats?.total_points} pts</span>
                 </div>
               ))
           )
