@@ -104,9 +104,12 @@ const Index = () => {
 
     if (!user) return;
 
+    const mode = gameMode === "hard" ? "hard" : "normal";
     supabase.from("quiz_completions").insert({
       user_id: user.id,
       subject: currentSubject,
+      mode,
+      points: mode === "hard" ? 20 : 10,
       score: correct,
       total_questions: total,
       time_seconds: timeSeconds,
@@ -124,7 +127,7 @@ const Index = () => {
 
     const allPlayed = (Object.keys(newStats) as Subject[]).every(s => newStats[s].total > 0);
     if (allPlayed) unlock("all_subjects");
-  }, [currentSubject, stats, totalQuizzes, user, unlock]);
+  }, [currentSubject, gameMode, stats, totalQuizzes, user, unlock]);
 
   const renderScreen = () => {
     if (screen === "landing") {

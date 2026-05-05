@@ -165,6 +165,8 @@ export type Database = {
         Row: {
           completed_at: string
           id: string
+          mode: string
+          points: number
           score: number
           subject: string
           time_seconds: number | null
@@ -174,6 +176,8 @@ export type Database = {
         Insert: {
           completed_at?: string
           id?: string
+          mode?: string
+          points?: number
           score?: number
           subject: string
           time_seconds?: number | null
@@ -183,6 +187,8 @@ export type Database = {
         Update: {
           completed_at?: string
           id?: string
+          mode?: string
+          points?: number
           score?: number
           subject?: string
           time_seconds?: number | null

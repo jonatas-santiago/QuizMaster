@@ -27,6 +27,7 @@ interface Friendship {
 
 interface FriendStats {
   total_quizzes: number;
+  total_points: number;
   avg_score: number;
   achievements: number;
 }
@@ -48,16 +49,26 @@ export const FriendsPage = ({ onBack, onChallenge }: FriendsPageProps) => {
       .from("friendships")
       .select("*")
       .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`);
-    if (!fs) return;
+    if (!fs) {
+      setFriendships([]);
+      setProfiles(new Map());
+      setStats(new Map());
+      return;
+    }
     setFriendships(fs);
 
     const otherIds = [...new Set(fs.map(f => f.requester_id === user.id ? f.addressee_id : f.requester_id))];
-    if (otherIds.length === 0) return;
+    const idsToLoad = [...new Set([...otherIds, user.id])];
+    if (idsToLoad.length === 0) {
+      setProfiles(new Map());
+      setStats(new Map());
+      return;
+    }
 
     const { data: profs } = await supabase
       .from("profiles")
       .select("user_id, display_name, avatar_url")
-      .in("user_id", otherIds);
+      .in("user_id", idsToLoad);
 
     const profMap = new Map<string, Profile>();
     profs?.forEach(p => profMap.set(p.user_id, p));
@@ -67,28 +78,32 @@ export const FriendsPage = ({ onBack, onChallenge }: FriendsPageProps) => {
     const acceptedIds = otherIds.filter(id => 
       fs.some(f => f.status === "accepted" && (f.requester_id === id || f.addressee_id === id))
     );
-    if (acceptedIds.length > 0) {
+    const statsIds = [...new Set([...acceptedIds, user.id])];
+    if (statsIds.length > 0) {
       const { data: comps } = await supabase
         .from("quiz_completions")
-        .select("user_id, score, total_questions")
-        .in("user_id", acceptedIds);
+        .select("user_id, score, total_questions, points")
+        .in("user_id", statsIds);
       const { data: achs } = await supabase
         .from("user_achievements")
         .select("user_id")
-        .in("user_id", acceptedIds);
+        .in("user_id", statsIds);
 
       const statMap = new Map<string, FriendStats>();
-      acceptedIds.forEach(id => {
+      statsIds.forEach(id => {
         const userComps = comps?.filter(c => c.user_id === id) || [];
         const totalQ = userComps.reduce((s, c) => s + (c.total_questions || 0), 0);
         const totalS = userComps.reduce((s, c) => s + (c.score || 0), 0);
         statMap.set(id, {
           total_quizzes: userComps.length,
+          total_points: userComps.reduce((s, c) => s + (c.points || 10), 0),
           avg_score: totalQ > 0 ? Math.round((totalS / totalQ) * 100) : 0,
           achievements: achs?.filter(a => a.user_id === id).length || 0,
         });
       });
       setStats(statMap);
+    } else {
+      setStats(new Map());
     }
   };
 
@@ -138,7 +153,11 @@ export const FriendsPage = ({ onBack, onChallenge }: FriendsPageProps) => {
   };
 
   const respond = async (id: string, status: "accepted" | "declined") => {
-    await supabase.from("friendships").update({ status }).eq("id", id);
+    const { error } = await supabase.from("friendships").update({ status }).eq("id", id);
+    if (error) {
+      toast.error("Erro ao responder pedido");
+      return;
+    }
     toast.success(status === "accepted" ? "Amigo adicionado! 🎉" : "Pedido recusado");
     loadData();
   };
@@ -245,7 +264,7 @@ export const FriendsPage = ({ onBack, onChallenge }: FriendsPageProps) => {
                     <p className="font-heading font-bold text-foreground">{prof?.display_name || "Amigo"}</p>
                     {st && (
                       <p className="text-xs text-muted-foreground">
-                        {st.total_quizzes} quizzes • {st.avg_score}% acerto • {st.achievements} 🏆
+                        {st.total_points} pts • {st.total_quizzes} quizzes • {st.avg_score}% acerto • {st.achievements} 🏆
                       </p>
                     )}
                   </div>
@@ -336,9 +355,20 @@ export const FriendsPage = ({ onBack, onChallenge }: FriendsPageProps) => {
                   </div>
                   <p className="flex-1 font-heading font-bold text-foreground">{p.display_name}</p>
                   {existing ? (
-                    <span className="text-xs font-semibold text-muted-foreground">
-                      {existing.status === "accepted" ? "✅ Amigos" : "⏳ Pendente"}
-                    </span>
+                    existing.status === "pending" && existing.addressee_id === user.id ? (
+                      <div className="flex gap-1">
+                        <Button size="sm" onClick={() => respond(existing.id, "accepted")} className="rounded-xl">
+                          <Check className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => respond(existing.id, "declined")} className="rounded-xl">
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <span className="text-xs font-semibold text-muted-foreground">
+                        {existing.status === "accepted" ? "✅ Amigos" : "⏳ Pendente"}
+                      </span>
+                    )
                   ) : (
                     <Button size="sm" onClick={() => sendRequest(p.user_id)} className="rounded-xl">
                       <UserPlus className="h-4 w-4 mr-1" /> Adicionar
@@ -354,26 +384,26 @@ export const FriendsPage = ({ onBack, onChallenge }: FriendsPageProps) => {
           rankingList.length === 0 ? (
             <p className="py-12 text-center font-body text-muted-foreground">Adicione amigos para ver o ranking!</p>
           ) : (
-            rankingList
+            [
+              { id: user.id, name: profiles.get(user.id)?.display_name || "Você", stats: stats.get(user.id), isMe: true },
+              ...rankingList.map(r => ({ ...r, isMe: false })),
+            ]
               .filter(r => r.stats)
-              .sort((a, b) => (b.stats?.avg_score || 0) - (a.stats?.avg_score || 0))
+              .sort((a, b) => (b.stats?.total_points || 0) - (a.stats?.total_points || 0) || (b.stats?.avg_score || 0) - (a.stats?.avg_score || 0))
               .map((r, i) => (
                 <div key={r.id} className={`flex items-center gap-3 rounded-2xl border-2 p-4 ${
-                  i === 0 ? "border-yellow-400 bg-yellow-50 dark:bg-yellow-950/20" :
-                  i === 1 ? "border-gray-400 bg-gray-50 dark:bg-gray-900/20" :
-                  i === 2 ? "border-amber-600 bg-amber-50 dark:bg-amber-950/20" :
-                  "border-quiz-option-border bg-card"
+                  i < 3 ? "border-primary/30 bg-primary/5" : "border-quiz-option-border bg-card"
                 }`}>
                   <span className="font-heading text-2xl font-black w-8">
                     {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`}
                   </span>
                   <div className="flex-1">
-                    <p className="font-heading font-bold text-foreground">{r.name}</p>
+                    <p className="font-heading font-bold text-foreground">{r.name}{r.isMe ? " (você)" : ""}</p>
                     <p className="text-xs text-muted-foreground">
-                      {r.stats?.total_quizzes} quizzes • {r.stats?.achievements} 🏆
+                      {r.stats?.total_quizzes} quizzes • {r.stats?.avg_score}% acerto • {r.stats?.achievements} 🏆
                     </p>
                   </div>
-                  <span className="font-heading text-xl font-black text-primary">{r.stats?.avg_score}%</span>
+                  <span className="font-heading text-xl font-black text-primary">{r.stats?.total_points} pts</span>
                 </div>
               ))
           )

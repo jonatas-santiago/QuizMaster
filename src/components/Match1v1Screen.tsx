@@ -52,6 +52,7 @@ export const Match1v1Screen = ({ subject, difficulty, onBack, roomCode: joinCode
   const [elapsed, setElapsed] = useState(0);
   const startTimeRef = useRef<number>(0);
   const timerRef = useRef<ReturnType<typeof setInterval>>();
+  const initStartedRef = useRef(false);
 
   // Opponent progress
   const [opponentCurrent, setOpponentCurrent] = useState(0);
@@ -63,6 +64,8 @@ export const Match1v1Screen = ({ subject, difficulty, onBack, roomCode: joinCode
   // Create or join room
   useEffect(() => {
     if (!user) return;
+    if (initStartedRef.current) return;
+    initStartedRef.current = true;
 
     const init = async () => {
       if (joinCode) {
@@ -81,24 +84,35 @@ export const Match1v1Screen = ({ subject, difficulty, onBack, roomCode: joinCode
         }
 
         // Update match with player2
-        await supabase.from("matches").update({
+        const { data: joinedMatch, error: joinError } = await supabase.from("matches").update({
           player2_id: user.id,
           status: "playing",
-        }).eq("id", match.id);
+        })
+          .eq("id", match.id)
+          .eq("status", "waiting")
+          .is("player2_id", null)
+          .select("*")
+          .single();
 
-        setMatchId(match.id);
+        if (joinError || !joinedMatch) {
+          toast.error("Não foi possível entrar nesta sala");
+          onBack();
+          return;
+        }
+
+        setMatchId(joinedMatch.id);
         setIsPlayer1(false);
-        setRoomCode(joinCode);
+        setRoomCode(joinedMatch.room_code);
 
         // Parse questions from match
-        const matchQuestions = (match.questions as any[]).map((q: any) => q as Question);
+        const matchQuestions = (joinedMatch.questions as any[]).map((q: any) => q as Question);
         setQuestions(matchQuestions);
 
         // Get opponent name
         const { data: profile } = await supabase
           .from("profiles")
           .select("display_name")
-          .eq("user_id", match.player1_id)
+          .eq("user_id", joinedMatch.player1_id)
           .single();
         setOpponentName(profile?.display_name || "Oponente");
 
