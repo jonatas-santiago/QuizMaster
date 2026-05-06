@@ -147,6 +147,27 @@ const Auth = () => {
             </div>
           </div>
 
+          {mode === "signup" && (
+            <div className="space-y-2">
+              <Label htmlFor="classRoom" className="font-heading font-bold">
+                Sua turma
+              </Label>
+              <div className="relative">
+                <Users className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Select value={classRoom} onValueChange={setClassRoom}>
+                  <SelectTrigger id="classRoom" className="rounded-xl pl-10">
+                    <SelectValue placeholder="Selecione sua sala" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CLASS_OPTIONS.map((c) => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+
           <Button
             type="submit"
             disabled={loading}
