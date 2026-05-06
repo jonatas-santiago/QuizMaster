@@ -3,9 +3,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { GraduationCap, User, Lock, ArrowLeft, Loader2, Eye, EyeOff } from "lucide-react";
+import { GraduationCap, User, Lock, ArrowLeft, Loader2, Eye, EyeOff, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const CLASS_OPTIONS = [
+  "6A", "6B", "6C", "6D",
+  "7A", "7B", "7C", "7D",
+  "8A", "8B",
+  "9A", "9B", "9C",
+];
 
 type Mode = "login" | "signup";
 
