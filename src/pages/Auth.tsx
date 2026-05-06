@@ -48,7 +48,7 @@ const Auth = () => {
           password,
           options: {
             emailRedirectTo: window.location.origin,
-            data: { display_name: displayName.trim() },
+            data: { display_name: displayName.trim(), class_room: classRoom },
           },
         });
         if (error) throw error;
