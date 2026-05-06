@@ -3,9 +3,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { GraduationCap, User, Lock, ArrowLeft, Loader2, Eye, EyeOff } from "lucide-react";
+import { GraduationCap, User, Lock, ArrowLeft, Loader2, Eye, EyeOff, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const CLASS_OPTIONS = [
+  "6A", "6B", "6C", "6D",
+  "7A", "7B", "7C", "7D",
+  "8A", "8B",
+  "9A", "9B", "9C",
+];
 
 type Mode = "login" | "signup";
 
@@ -16,6 +24,7 @@ const Auth = () => {
   const [mode, setMode] = useState<Mode>("login");
   const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
+  const [classRoom, setClassRoom] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
@@ -24,6 +33,10 @@ const Auth = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!displayName.trim()) return;
+    if (mode === "signup" && !classRoom) {
+      toast({ title: "Selecione sua turma", description: "Escolha sua sala antes de continuar.", variant: "destructive" });
+      return;
+    }
     setLoading(true);
 
     const fakeEmail = toFakeEmail(displayName.trim());
@@ -35,7 +48,7 @@ const Auth = () => {
           password,
           options: {
             emailRedirectTo: window.location.origin,
-            data: { display_name: displayName.trim() },
+            data: { display_name: displayName.trim(), class_room: classRoom },
           },
         });
         if (error) throw error;
@@ -133,6 +146,27 @@ const Auth = () => {
               </button>
             </div>
           </div>
+
+          {mode === "signup" && (
+            <div className="space-y-2">
+              <Label htmlFor="classRoom" className="font-heading font-bold">
+                Sua turma
+              </Label>
+              <div className="relative">
+                <Users className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Select value={classRoom} onValueChange={setClassRoom}>
+                  <SelectTrigger id="classRoom" className="rounded-xl pl-10">
+                    <SelectValue placeholder="Selecione sua sala" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CLASS_OPTIONS.map((c) => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
 
           <Button
             type="submit"
