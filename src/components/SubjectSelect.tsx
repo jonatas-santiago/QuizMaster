@@ -1,6 +1,7 @@
 import { Subject, subjectConfig } from "@/data/quizQuestions";
 import { cn } from "@/lib/utils";
 import { Leaderboard } from "./Leaderboard";
+import { ArrowLeft } from "lucide-react";
 
 interface SubjectSelectProps {
   onSelect: (subject: Subject) => void;
@@ -9,13 +10,22 @@ interface SubjectSelectProps {
   onShowProfile?: () => void;
   onShowAdmin?: () => void;
   onShowFriends?: () => void;
+  onBack?: () => void;
 }
 
-export const SubjectSelect = ({ onSelect, stats, onShowAchievements, onShowProfile, onShowAdmin, onShowFriends }: SubjectSelectProps) => {
+export const SubjectSelect = ({ onSelect, stats, onShowAchievements, onShowProfile, onShowAdmin, onShowFriends, onBack }: SubjectSelectProps) => {
   const subjects = Object.entries(subjectConfig) as [Subject, typeof subjectConfig[Subject]][];
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center gap-8 px-4 py-8">
+    <div className="relative mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center gap-8 px-4 py-8">
+      {onBack && (
+        <button
+          onClick={onBack}
+          className="absolute left-4 top-4 flex items-center gap-1 rounded-xl bg-card px-3 py-2 font-heading text-sm font-bold text-foreground shadow-sm transition-colors hover:bg-muted"
+        >
+          <ArrowLeft className="h-4 w-4" /> Voltar
+        </button>
+      )}
       <div className="text-center">
         <h1 className="font-heading text-4xl font-black tracking-tight text-foreground">
           🎓 QuizMaster

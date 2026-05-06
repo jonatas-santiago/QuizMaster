@@ -207,6 +207,7 @@ const Index = () => {
           onShowProfile={user ? () => setScreen("profile") : undefined}
           onShowFriends={user ? () => setScreen("friends") : undefined}
           onShowAdmin={isAdmin ? () => setScreen("admin") : undefined}
+          onBack={!user ? () => setScreen("landing") : undefined}
         />
       );
     }

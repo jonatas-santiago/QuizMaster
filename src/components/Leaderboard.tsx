@@ -61,9 +61,6 @@ const LeaderList = ({ leaders, loading }: { leaders: LeaderEntry[]; loading: boo
               <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">
                 {entry.total_points} pts
               </span>
-              <span className="text-[10px] font-semibold text-muted-foreground">
-                {entry.total_quizzes} {entry.total_quizzes === 1 ? "lição" : "lições"}
-              </span>
               {entry.avg_time > 0 && (
                 <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
                   <Clock className="h-3 w-3" /> média {formatTime(Math.round(entry.avg_time))}
