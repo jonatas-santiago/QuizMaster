@@ -24,6 +24,7 @@ const Auth = () => {
   const [mode, setMode] = useState<Mode>("login");
   const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
+  const [classRoom, setClassRoom] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
@@ -32,6 +33,10 @@ const Auth = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!displayName.trim()) return;
+    if (mode === "signup" && !classRoom) {
+      toast({ title: "Selecione sua turma", description: "Escolha sua sala antes de continuar.", variant: "destructive" });
+      return;
+    }
     setLoading(true);
 
     const fakeEmail = toFakeEmail(displayName.trim());
