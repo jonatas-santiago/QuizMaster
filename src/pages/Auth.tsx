@@ -58,7 +58,7 @@ const Auth = () => {
           password,
         });
         if (loginErr) throw loginErr;
-        navigate("/");
+        navigate("/?start=1");
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: fakeEmail,

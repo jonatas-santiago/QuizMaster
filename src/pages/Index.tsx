@@ -64,6 +64,14 @@ const Index = () => {
     }
   }, [searchParams, user, setSearchParams]);
 
+  // Auto-advance newly registered users straight to the subjects screen
+  useEffect(() => {
+    if (searchParams.get("start") === "1" && user) {
+      setScreen("subjects");
+      setSearchParams({});
+    }
+  }, [searchParams, user, setSearchParams]);
+
   const getDifficulty = (subject: Subject) => {
     const s = stats[subject];
     if (s.total === 0) return 1;
