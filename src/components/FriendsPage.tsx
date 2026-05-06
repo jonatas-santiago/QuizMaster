@@ -41,6 +41,20 @@ export const FriendsPage = ({ onBack, onChallenge }: FriendsPageProps) => {
   const [searchResults, setSearchResults] = useState<Profile[]>([]);
   const [tab, setTab] = useState<"friends" | "requests" | "search" | "ranking">("friends");
   const [challengeOpen, setChallengeOpen] = useState<{ friendId: string; friendName: string } | null>(null);
+  const [profileOpen, setProfileOpen] = useState<string | null>(null);
+  const [profileHistory, setProfileHistory] = useState<Array<{ subject: string; score: number; total_questions: number; points: number; mode: string; completed_at: string }>>([]);
+
+  const openProfile = async (userId: string) => {
+    setProfileOpen(userId);
+    setProfileHistory([]);
+    const { data } = await supabase
+      .from("quiz_completions")
+      .select("subject, score, total_questions, points, mode, completed_at")
+      .eq("user_id", userId)
+      .order("completed_at", { ascending: false })
+      .limit(10);
+    setProfileHistory(data || []);
+  };
 
   const loadData = async () => {
     if (!user) return;
