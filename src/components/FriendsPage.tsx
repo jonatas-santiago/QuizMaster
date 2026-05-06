@@ -282,6 +282,9 @@ export const FriendsPage = ({ onBack, onChallenge }: FriendsPageProps) => {
                       </p>
                     )}
                   </div>
+                  <Button size="sm" variant="outline" onClick={() => openProfile(otherId)} className="rounded-xl" title="Ver perfil">
+                    <Eye className="h-4 w-4" />
+                  </Button>
                   <Button size="sm" onClick={() => setChallengeOpen({ friendId: otherId, friendName: prof?.display_name || "Amigo" })} className="rounded-xl">
                     <Swords className="h-4 w-4" />
                   </Button>
