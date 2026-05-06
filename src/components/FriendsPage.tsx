@@ -449,6 +449,73 @@ export const FriendsPage = ({ onBack, onChallenge }: FriendsPageProps) => {
           </div>
         </div>
       )}
+
+      {/* Modal de perfil do amigo */}
+      {profileOpen && (() => {
+        const prof = profiles.get(profileOpen);
+        const st = stats.get(profileOpen);
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setProfileOpen(null)}>
+            <div className="w-full max-w-sm max-h-[85vh] overflow-y-auto rounded-3xl bg-card p-6" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center gap-3">
+                {prof?.avatar_url ? (
+                  <img src={prof.avatar_url} alt={prof.display_name} className="h-16 w-16 rounded-full object-cover" />
+                ) : (
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 font-heading text-2xl font-bold text-primary">
+                    {prof?.display_name?.[0]?.toUpperCase() || "?"}
+                  </div>
+                )}
+                <div>
+                  <h3 className="font-heading text-xl font-black text-foreground">{prof?.display_name || "Amigo"}</h3>
+                  <p className="text-xs text-muted-foreground">Perfil do amigo</p>
+                </div>
+              </div>
+
+              {st && (
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <div className="rounded-2xl border-2 border-quiz-option-border bg-card p-3 text-center">
+                    <p className="text-xs text-muted-foreground">Pontos</p>
+                    <p className="font-heading text-lg font-black text-primary">{st.total_points}</p>
+                  </div>
+                  <div className="rounded-2xl border-2 border-quiz-option-border bg-card p-3 text-center">
+                    <p className="text-xs text-muted-foreground">Quizzes</p>
+                    <p className="font-heading text-lg font-black text-foreground">{st.total_quizzes}</p>
+                  </div>
+                  <div className="rounded-2xl border-2 border-quiz-option-border bg-card p-3 text-center">
+                    <p className="text-xs text-muted-foreground">Acertos</p>
+                    <p className="font-heading text-lg font-black text-foreground">{st.avg_score}%</p>
+                  </div>
+                  <div className="rounded-2xl border-2 border-quiz-option-border bg-card p-3 text-center">
+                    <p className="text-xs text-muted-foreground">Conquistas</p>
+                    <p className="font-heading text-lg font-black text-foreground">{st.achievements} 🏆</p>
+                  </div>
+                </div>
+              )}
+
+              <h4 className="mt-5 font-heading text-sm font-bold uppercase text-muted-foreground">Últimos quizzes</h4>
+              <div className="mt-2 space-y-2">
+                {profileHistory.length === 0 ? (
+                  <p className="py-4 text-center text-sm text-muted-foreground">Nenhum quiz ainda</p>
+                ) : profileHistory.map((h, i) => {
+                  const cfg = subjectConfig[h.subject as Subject];
+                  return (
+                    <div key={i} className="flex items-center gap-2 rounded-xl border border-quiz-option-border bg-background p-2">
+                      <span className="text-lg">{cfg?.emoji || "📚"}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-heading text-sm font-bold text-foreground truncate">{cfg?.label || h.subject}</p>
+                        <p className="text-xs text-muted-foreground">{h.score}/{h.total_questions} • {h.mode === "hard" ? "Difícil" : "Normal"}</p>
+                      </div>
+                      <span className="font-heading text-sm font-black text-primary">+{h.points}</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <Button variant="ghost" className="mt-4 w-full rounded-xl" onClick={() => setProfileOpen(null)}>Fechar</Button>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
