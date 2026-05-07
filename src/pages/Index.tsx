@@ -95,7 +95,7 @@ const Index = () => {
     }
   };
 
-  const handleFinish = useCallback((correct: number, total: number, maxStreak: number, livesLost: number, timeSeconds: number) => {
+  const handleFinish = useCallback((correct: number, total: number, maxStreak: number, livesLost: number, timeSeconds: number, helpUsed: number = 0) => {
     if (!currentSubject) return;
 
     const newStats = {
@@ -113,11 +113,15 @@ const Index = () => {
     if (!user) return;
 
     const mode = gameMode === "hard" ? "hard" : "normal";
+    const basePoints = mode === "hard" ? 20 : 10;
+    // Cada uso de IA/solução reduz 2 pontos no normal e 4 no difícil (mínimo 1)
+    const penalty = helpUsed * (mode === "hard" ? 4 : 2);
+    const finalPoints = Math.max(1, basePoints - penalty);
     supabase.from("quiz_completions").insert({
       user_id: user.id,
       subject: currentSubject,
       mode,
-      points: mode === "hard" ? 20 : 10,
+      points: finalPoints,
       score: correct,
       total_questions: total,
       time_seconds: timeSeconds,
