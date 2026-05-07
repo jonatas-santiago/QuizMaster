@@ -53,7 +53,14 @@ const LeaderList = ({ leaders, loading }: { leaders: LeaderEntry[]; loading: boo
           <div key={entry.user_id} className="flex items-center gap-3 rounded-xl bg-muted/50 px-4 py-3">
             <span className="text-2xl">{medals[i]}</span>
             <div className="flex flex-1 flex-col">
-              <span className="font-heading font-bold text-foreground">{entry.display_name}</span>
+              <div className="flex items-center gap-2">
+                <span className="font-heading font-bold text-foreground">{entry.display_name}</span>
+                {entry.class_room && (
+                  <span className="rounded-full bg-accent/20 px-2 py-0.5 text-[10px] font-bold text-accent-foreground">
+                    {entry.class_room}
+                  </span>
+                )}
+              </div>
               <span className={`text-xs font-semibold ${label.color}`}>
                 {Math.round(entry.avg_percent)}% – {label.text}
               </span>
