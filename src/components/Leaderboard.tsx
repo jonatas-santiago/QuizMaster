@@ -102,11 +102,11 @@ export const Leaderboard = () => {
       const userIds = [...new Set(completions.map(c => c.user_id))];
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("user_id, display_name")
+        .select("user_id, display_name, class_room")
         .in("user_id", userIds);
 
-      const profileMap: Record<string, string> = {};
-      profiles?.forEach(p => { profileMap[p.user_id] = p.display_name || "Anônimo"; });
+      const profileMap: Record<string, { name: string; class_room: string | null }> = {};
+      profiles?.forEach(p => { profileMap[p.user_id] = { name: p.display_name || "Anônimo", class_room: p.class_room }; });
 
       // Build per-subject + geral
       const buildTop3 = (entries: typeof completions): LeaderEntry[] => {
@@ -124,7 +124,8 @@ export const Leaderboard = () => {
           .slice(0, 3)
           .map(([uid, v]) => ({
             user_id: uid,
-            display_name: profileMap[uid] || "Anônimo",
+            display_name: profileMap[uid]?.name || "Anônimo",
+            class_room: profileMap[uid]?.class_room || null,
             total_quizzes: v.count,
             total_points: v.totalPoints,
             avg_time: v.count > 0 ? v.totalTime / v.count : 0,
