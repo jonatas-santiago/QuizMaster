@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 interface LeaderEntry {
   user_id: string;
   display_name: string;
+  class_room: string | null;
   total_quizzes: number;
   total_points: number;
   avg_time: number;
