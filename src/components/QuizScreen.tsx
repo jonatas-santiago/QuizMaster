@@ -367,6 +367,7 @@ export const QuizScreen = ({ subject, difficulty, hardMode = false, onBack, onFi
           </Button>
         )}
       </div>
+      {showAI && <AIChat question={currentQuestion} onClose={() => setShowAI(false)} />}
     </div>
   );
 };
