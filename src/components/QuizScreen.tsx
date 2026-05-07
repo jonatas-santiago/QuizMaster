@@ -192,6 +192,9 @@ export const QuizScreen = ({ subject, difficulty, hardMode = false, onBack, onFi
             setLivesLost(0);
             setElapsed(0);
             setQuestionTimer(HARD_MODE_SECONDS);
+            setShowSolution(false);
+            setHelpUsedThisQ(false);
+            setHelpUsedTotal(0);
             startTimeRef.current = Date.now();
             timerRef.current = setInterval(() => {
               setElapsed(Math.floor((Date.now() - startTimeRef.current) / 1000));
