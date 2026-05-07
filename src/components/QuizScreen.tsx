@@ -137,13 +137,15 @@ export const QuizScreen = ({ subject, difficulty, hardMode = false, onBack, onFi
       const finalTime = Math.floor((Date.now() - startTimeRef.current) / 1000);
       setElapsed(finalTime);
       setFinished(true);
-      onFinish(correctCount, quizQuestions.length, maxStreak, livesLost, finalTime);
+      onFinish(correctCount, quizQuestions.length, maxStreak, livesLost, finalTime, helpUsedTotal);
       return;
     }
     setCurrentIndex(i => i + 1);
     setSelectedOption(null);
     setRevealed(false);
-  }, [lives, currentIndex, quizQuestions.length, correctCount, onFinish, maxStreak, livesLost]);
+    setShowSolution(false);
+    setHelpUsedThisQ(false);
+  }, [lives, currentIndex, quizQuestions.length, correctCount, onFinish, maxStreak, livesLost, helpUsedTotal]);
 
   if (quizQuestions.length === 0) return null;
 
