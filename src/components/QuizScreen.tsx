@@ -54,6 +54,10 @@ export const QuizScreen = ({ subject, difficulty, hardMode = false, onBack, onFi
   const [livesLost, setLivesLost] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [questionTimer, setQuestionTimer] = useState(HARD_MODE_SECONDS);
+  const [showSolution, setShowSolution] = useState(false);
+  const [showAI, setShowAI] = useState(false);
+  const [helpUsedThisQ, setHelpUsedThisQ] = useState(false);
+  const [helpUsedTotal, setHelpUsedTotal] = useState(0);
   const startTimeRef = useRef<number>(Date.now());
   const timerRef = useRef<ReturnType<typeof setInterval>>();
   const questionTimerRef = useRef<ReturnType<typeof setInterval>>();
