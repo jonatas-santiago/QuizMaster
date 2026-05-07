@@ -3,15 +3,16 @@ import { Question, Subject, subjectConfig, getQuestionsForSubject, shuffleArray 
 import { QuizOption } from "./QuizOption";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Trophy, Heart, Zap, Clock } from "lucide-react";
+import { ArrowLeft, ArrowRight, Trophy, Heart, Zap, Clock, Lightbulb, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AIChat } from "./AIChat";
 
 interface QuizScreenProps {
   subject: Subject;
   difficulty: number;
   hardMode?: boolean;
   onBack: () => void;
-  onFinish: (correct: number, total: number, maxStreak: number, livesLost: number, timeSeconds: number) => void;
+  onFinish: (correct: number, total: number, maxStreak: number, livesLost: number, timeSeconds: number, helpUsed: number) => void;
 }
 
 const QUESTIONS_PER_ROUND = 5;
@@ -53,6 +54,10 @@ export const QuizScreen = ({ subject, difficulty, hardMode = false, onBack, onFi
   const [livesLost, setLivesLost] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [questionTimer, setQuestionTimer] = useState(HARD_MODE_SECONDS);
+  const [showSolution, setShowSolution] = useState(false);
+  const [showAI, setShowAI] = useState(false);
+  const [helpUsedThisQ, setHelpUsedThisQ] = useState(false);
+  const [helpUsedTotal, setHelpUsedTotal] = useState(0);
   const startTimeRef = useRef<number>(Date.now());
   const timerRef = useRef<ReturnType<typeof setInterval>>();
   const questionTimerRef = useRef<ReturnType<typeof setInterval>>();
@@ -132,13 +137,15 @@ export const QuizScreen = ({ subject, difficulty, hardMode = false, onBack, onFi
       const finalTime = Math.floor((Date.now() - startTimeRef.current) / 1000);
       setElapsed(finalTime);
       setFinished(true);
-      onFinish(correctCount, quizQuestions.length, maxStreak, livesLost, finalTime);
+      onFinish(correctCount, quizQuestions.length, maxStreak, livesLost, finalTime, helpUsedTotal);
       return;
     }
     setCurrentIndex(i => i + 1);
     setSelectedOption(null);
     setRevealed(false);
-  }, [lives, currentIndex, quizQuestions.length, correctCount, onFinish, maxStreak, livesLost]);
+    setShowSolution(false);
+    setHelpUsedThisQ(false);
+  }, [lives, currentIndex, quizQuestions.length, correctCount, onFinish, maxStreak, livesLost, helpUsedTotal]);
 
   if (quizQuestions.length === 0) return null;
 
@@ -185,6 +192,9 @@ export const QuizScreen = ({ subject, difficulty, hardMode = false, onBack, onFi
             setLivesLost(0);
             setElapsed(0);
             setQuestionTimer(HARD_MODE_SECONDS);
+            setShowSolution(false);
+            setHelpUsedThisQ(false);
+            setHelpUsedTotal(0);
             startTimeRef.current = Date.now();
             timerRef.current = setInterval(() => {
               setElapsed(Math.floor((Date.now() - startTimeRef.current) / 1000));
@@ -293,7 +303,48 @@ export const QuizScreen = ({ subject, difficulty, hardMode = false, onBack, onFi
         </div>
       )}
 
-      {/* Action button */}
+      {/* Help: Solution + AI */}
+      {!revealed && (
+        <div className="mt-4 flex flex-col gap-2">
+          {showSolution && (
+            <div className="rounded-2xl border-2 border-yellow-400/50 bg-yellow-50/50 dark:bg-yellow-950/20 p-3 text-sm">
+              <p className="font-bold text-yellow-700 dark:text-yellow-400">💡 Solução</p>
+              <p className="mt-1 text-foreground/80">
+                Resposta: <span className="font-bold">{["A","B","C","D"][currentQuestion.correctIndex]}) {currentQuestion.options[currentQuestion.correctIndex]}</span>
+              </p>
+              <p className="mt-1 text-foreground/80">{currentQuestion.explanation}</p>
+            </div>
+          )}
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (!helpUsedThisQ) { setHelpUsedTotal(t => t + 1); setHelpUsedThisQ(true); }
+                setShowSolution(true);
+              }}
+              className="flex-1 rounded-xl text-xs font-bold"
+            >
+              <Lightbulb className="mr-1 h-3.5 w-3.5" /> Solução
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (!helpUsedThisQ) { setHelpUsedTotal(t => t + 1); setHelpUsedThisQ(true); }
+                setShowAI(true);
+              }}
+              className="flex-1 rounded-xl text-xs font-bold"
+            >
+              <Sparkles className="mr-1 h-3.5 w-3.5" /> Tutor IA
+            </Button>
+          </div>
+          {helpUsedThisQ && (
+            <p className="text-center text-[10px] text-muted-foreground">⚠️ Usar ajuda reduz seus pontos</p>
+          )}
+        </div>
+      )}
+
       <div className="mt-6 pb-6">
         {!revealed ? (
           <Button
@@ -316,6 +367,7 @@ export const QuizScreen = ({ subject, difficulty, hardMode = false, onBack, onFi
           </Button>
         )}
       </div>
+      {showAI && <AIChat question={currentQuestion} onClose={() => setShowAI(false)} />}
     </div>
   );
 };

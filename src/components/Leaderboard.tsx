@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 interface LeaderEntry {
   user_id: string;
   display_name: string;
+  class_room: string | null;
   total_quizzes: number;
   total_points: number;
   avg_time: number;
@@ -52,7 +53,14 @@ const LeaderList = ({ leaders, loading }: { leaders: LeaderEntry[]; loading: boo
           <div key={entry.user_id} className="flex items-center gap-3 rounded-xl bg-muted/50 px-4 py-3">
             <span className="text-2xl">{medals[i]}</span>
             <div className="flex flex-1 flex-col">
-              <span className="font-heading font-bold text-foreground">{entry.display_name}</span>
+              <div className="flex items-center gap-2">
+                <span className="font-heading font-bold text-foreground">{entry.display_name}</span>
+                {entry.class_room && (
+                  <span className="rounded-full bg-accent/20 px-2 py-0.5 text-[10px] font-bold text-accent-foreground">
+                    {entry.class_room}
+                  </span>
+                )}
+              </div>
               <span className={`text-xs font-semibold ${label.color}`}>
                 {Math.round(entry.avg_percent)}% – {label.text}
               </span>
@@ -94,11 +102,11 @@ export const Leaderboard = () => {
       const userIds = [...new Set(completions.map(c => c.user_id))];
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("user_id, display_name")
+        .select("user_id, display_name, class_room")
         .in("user_id", userIds);
 
-      const profileMap: Record<string, string> = {};
-      profiles?.forEach(p => { profileMap[p.user_id] = p.display_name || "Anônimo"; });
+      const profileMap: Record<string, { name: string; class_room: string | null }> = {};
+      profiles?.forEach(p => { profileMap[p.user_id] = { name: p.display_name || "Anônimo", class_room: p.class_room }; });
 
       // Build per-subject + geral
       const buildTop3 = (entries: typeof completions): LeaderEntry[] => {
@@ -116,7 +124,8 @@ export const Leaderboard = () => {
           .slice(0, 3)
           .map(([uid, v]) => ({
             user_id: uid,
-            display_name: profileMap[uid] || "Anônimo",
+            display_name: profileMap[uid]?.name || "Anônimo",
+            class_room: profileMap[uid]?.class_room || null,
             total_quizzes: v.count,
             total_points: v.totalPoints,
             avg_time: v.count > 0 ? v.totalTime / v.count : 0,
