@@ -303,7 +303,48 @@ export const QuizScreen = ({ subject, difficulty, hardMode = false, onBack, onFi
         </div>
       )}
 
-      {/* Action button */}
+      {/* Help: Solution + AI */}
+      {!revealed && (
+        <div className="mt-4 flex flex-col gap-2">
+          {showSolution && (
+            <div className="rounded-2xl border-2 border-yellow-400/50 bg-yellow-50/50 dark:bg-yellow-950/20 p-3 text-sm">
+              <p className="font-bold text-yellow-700 dark:text-yellow-400">💡 Solução</p>
+              <p className="mt-1 text-foreground/80">
+                Resposta: <span className="font-bold">{["A","B","C","D"][currentQuestion.correctIndex]}) {currentQuestion.options[currentQuestion.correctIndex]}</span>
+              </p>
+              <p className="mt-1 text-foreground/80">{currentQuestion.explanation}</p>
+            </div>
+          )}
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (!helpUsedThisQ) { setHelpUsedTotal(t => t + 1); setHelpUsedThisQ(true); }
+                setShowSolution(true);
+              }}
+              className="flex-1 rounded-xl text-xs font-bold"
+            >
+              <Lightbulb className="mr-1 h-3.5 w-3.5" /> Solução
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (!helpUsedThisQ) { setHelpUsedTotal(t => t + 1); setHelpUsedThisQ(true); }
+                setShowAI(true);
+              }}
+              className="flex-1 rounded-xl text-xs font-bold"
+            >
+              <Sparkles className="mr-1 h-3.5 w-3.5" /> Tutor IA
+            </Button>
+          </div>
+          {helpUsedThisQ && (
+            <p className="text-center text-[10px] text-muted-foreground">⚠️ Usar ajuda reduz seus pontos</p>
+          )}
+        </div>
+      )}
+
       <div className="mt-6 pb-6">
         {!revealed ? (
           <Button
