@@ -3,15 +3,16 @@ import { Question, Subject, subjectConfig, getQuestionsForSubject, shuffleArray 
 import { QuizOption } from "./QuizOption";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Trophy, Heart, Zap, Clock } from "lucide-react";
+import { ArrowLeft, ArrowRight, Trophy, Heart, Zap, Clock, Lightbulb, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AIChat } from "./AIChat";
 
 interface QuizScreenProps {
   subject: Subject;
   difficulty: number;
   hardMode?: boolean;
   onBack: () => void;
-  onFinish: (correct: number, total: number, maxStreak: number, livesLost: number, timeSeconds: number) => void;
+  onFinish: (correct: number, total: number, maxStreak: number, livesLost: number, timeSeconds: number, helpUsed: number) => void;
 }
 
 const QUESTIONS_PER_ROUND = 5;
